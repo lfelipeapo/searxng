@@ -45,4 +45,4 @@ RUN /usr/local/searxng/searx-pyenv/bin/pip install uwsgi
 EXPOSE 8888
 
 # Start the application
-CMD ["/bin/bash", "-c", "source /usr/local/searxng/searx-pyenv/bin/activate && python searxng-src/searx/webapp.py"]
+CMD ["/bin/bash", "-c", ". /usr/local/searxng/searx-pyenv/bin/activate && python searxng-src/searx/webapp.py"]
