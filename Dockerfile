@@ -11,6 +11,10 @@ RUN apt-get update && \
     python3-pip \
     git \
     uwsgi \
+    sudo \
+    systemctl \
+    wget \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Crie um usuário não-root
@@ -22,8 +26,8 @@ RUN git clone https://github.com/lfelipeapo/searxng.git $SEARXNG_HOME
 # Defina o diretório de trabalho
 WORKDIR $SEARXNG_HOME
 
-# Defina permissões para o diretório
-RUN chown -R searxng:searxng /srv/searxng
+# Adicione o diretório do repositório à lista de diretórios seguros do Git
+RUN git config --global --add safe.directory /srv/searxng
 
 # Instale o SearXNG e suas dependências
 RUN chmod +x ./utils/searxng.sh && ./utils/searxng.sh install all
