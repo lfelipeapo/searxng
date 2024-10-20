@@ -1,48 +1,35 @@
-FROM python:3.9-slim
+# Use Ubuntu como base
+FROM ubuntu:22.04
 
-# Instalar dependências do sistema
-RUN apt-get update && apt-get install -y \
-    python3-dev \
-    python3-babel \
-    python3-venv \
-    uwsgi \
-    uwsgi-plugin-python3 \
+# Defina variáveis de ambiente
+ENV SEARXNG_HOME=/srv/searxng
+
+# Atualize o sistema e instale o Python 3.9 e outras dependências
+RUN apt-get update && \
+    apt-get install -y \
+    python3.9 \
+    python3-pip \
     git \
-    build-essential \
-    libxslt-dev \
-    zlib1g-dev \
-    libffi-dev \
-    libssl-dev && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+    uwsgi \
+    && rm -rf /var/lib/apt/lists/*
 
-# Criar usuário e estrutura de diretórios
-RUN useradd --shell /bin/bash --system --home-dir /usr/local/searxng --comment 'Privacy-respecting metasearch engine' searxng && \
-    mkdir -p /usr/local/searxng && \
-    chown -R searxng:searxng /usr/local/searxng
+# Crie um usuário não-root
+RUN useradd -m searxng
 
-# Mudar para usuário não-root
-USER searxng
+# Clone o repositório do SearXNG
+RUN git clone https://github.com/lfelipeapo/searxng.git $SEARXNG_HOME
 
-# Definir diretório de trabalho
-WORKDIR /usr/local/searxng
+# Defina o diretório de trabalho
+WORKDIR $SEARXNG_HOME
 
-# Clonar repositório SearXNG
-RUN git clone https://github.com/lfelipeapo/searxng /usr/local/searxng/searxng-src
+# Defina permissões para o diretório
+RUN chown -R searxng:searxng /srv/searxng
 
-# Configurar ambiente virtual
-RUN python3 -m venv /usr/local/searxng/searx-pyenv
+# Instale o SearXNG e suas dependências
+RUN chmod +x ./utils/searxng.sh && ./utils/searxng.sh install all
 
-# Ativar ambiente virtual e instalar dependências
-RUN . /usr/local/searxng/searx-pyenv/bin/activate && \
-    pip install -U pip setuptools wheel pyyaml && \
-    cd /usr/local/searxng/searxng-src && \
-    pip install --use-pep517 --no-build-isolation -r requirements.txt
+# Exponha as portas necessárias
+EXPOSE 8080
 
-# Instalar dependências adicionais
-RUN pip install uwsgi
-
-# Expor porta
-EXPOSE 8888
-
-# Iniciar aplicação
-CMD ["/bin/bash", "-c", ". /usr/local/searxng/searx-pyenv/bin/activate && python searxng-src/searx/webapp.py"]
+# Comando para executar o SearXNG
+CMD ["uwsgi", "--ini", "searxng.ini"]
