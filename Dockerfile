@@ -1,5 +1,4 @@
 FROM alpine:3.20
-
 ENTRYPOINT ["/sbin/tini","--","/usr/local/searxng/dockerfiles/docker-entrypoint.sh"]
 EXPOSE 8080
 VOLUME /etc/searxng
@@ -23,12 +22,6 @@ ENV INSTANCE_NAME=searxng \
 WORKDIR /usr/local/searxng
 
 COPY requirements.txt ./requirements.txt
-
-RUN apk update && apk add git
-
-RUN git config --global --add safe.directory /usr/local/searxng/searx
-
-RUN git clone https://github.com/searxng/searxng.git /usr/local/searxng/searx
 
 RUN apk add --no-cache -t build-dependencies \
     build-base \
@@ -71,7 +64,6 @@ ARG VERSION_GITCOMMIT=unknown
 
 RUN su searxng -c "/usr/bin/python3 -m compileall -q searx" \
  && touch -c --date=@${TIMESTAMP_SETTINGS} searx/settings.yml \
- && sed -i "s|ultrasecretkey|$(openssl rand -hex 32)|g" searx/settings.yml \
  && touch -c --date=@${TIMESTAMP_UWSGI} dockerfiles/uwsgi.ini \
  && find /usr/local/searxng/searx/static -a \( -name '*.html' -o -name '*.css' -o -name '*.js' \
     -o -name '*.svg' -o -name '*.ttf' -o -name '*.eot' \) \
@@ -101,5 +93,4 @@ LABEL maintainer="searxng <${GIT_URL}>" \
       org.opencontainers.image.revision=${LABEL_VCS_REF} \
       org.opencontainers.image.source=${LABEL_VCS_URL} \
       org.opencontainers.image.created="${LABEL_DATE}" \
-      org.opencontainers.image.documentation="https://github.com/searxng/searxng-docker" \
-      org.opencontainers.image.license="AGPL-3.0-or-later"
+      org.opencontainers.image.documentation="https://github.com/searxng/searxng-docker"
