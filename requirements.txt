@@ -19,3 +19,8 @@ pytomlpp==1.0.13; python_version < '3.11'
 pydantic==2.9.2
 eval_type_backport; python_version < '3.9'
 typer-slim==0.12.5
+# Dependências adicionais
+uwsgi
+setuptools
+wheel
+pip
