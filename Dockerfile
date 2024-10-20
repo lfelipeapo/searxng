@@ -21,6 +21,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     systemctl \
     wget \
     curl \
+    python-is-python3 \
     && rm -rf /var/lib/apt/lists/*
 
 # Crie um usuário não-root
@@ -38,10 +39,10 @@ RUN git config --global --add safe.directory /srv/searxng
 # Instale o SearXNG e suas dependências
 RUN chmod +x ./utils/searxng.sh && \
     ./utils/searxng.sh install searxng-src && \
+    ./utils/searxng.sh install packages && \
     ./utils/searxng.sh install pyenv && \
     ./utils/searxng.sh install settings && \
-    ./utils/searxng.sh install uwsgi && \
-    ./utils/searxng.sh install all
+    ./utils/searxng.sh install uwsgi
 
 # Exponha as portas necessárias
 EXPOSE 8080
