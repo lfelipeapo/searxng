@@ -94,4 +94,8 @@ LABEL maintainer="searxng <${GIT_URL}>" \
       org.opencontainers.image.title="searxng" \
       org.opencontainers.image.version="${SEARXNG_DOCKER_TAG}" \
       org.opencontainers.image.url="${LABEL_VCS_URL}" \
-      org
+      org.opencontainers.image.revision=${LABEL_VCS_REF} \
+      org.opencontainers.image.source=${LABEL_VCS_URL} \
+      org.opencontainers.image.created="${LABEL_DATE}" \
+      org.opencontainers.image.documentation="https://github.com/searxng/searxng-docker" \
+      org.opencontainers.image.license="AGPL-3.0-or-later"
