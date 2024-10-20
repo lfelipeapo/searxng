@@ -31,7 +31,7 @@ RUN git clone https://github.com/searxng/searxng /usr/local/searxng/searxng-src
 
 # Set up Python virtual environment
 RUN python3 -m venv /usr/local/searxng/searx-pyenv && \
-    echo "source /usr/local/searxng/searx-pyenv/bin/activate" >> ~/.bashrc
+    echo ". /usr/local/searxng/searx-pyenv/bin/activate" >> ~/.bashrc
 
 # Activate virtual environment and install dependencies
 RUN /usr/local/searxng/searx-pyenv/bin/pip install -U pip setuptools wheel pyyaml && \
@@ -45,4 +45,4 @@ RUN /usr/local/searxng/searx-pyenv/bin/pip install uwsgi
 EXPOSE 8888
 
 # Start the application
-CMD ["/bin/bash", "-c", "source /usr/local/searxng/searx-pyenv/bin/activate && python searx/webapp.py"]
+CMD ["/bin/bash", "-c", "source /usr/local/searxng/searx-pyenv/bin/activate && python searxng-src/searx/webapp.py"]
