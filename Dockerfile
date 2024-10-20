@@ -38,11 +38,11 @@ RUN git config --global --add safe.directory /srv/searxng
 
 # Instale o SearXNG e suas dependências
 RUN chmod +x ./utils/searxng.sh && \
-    ./utils/searxng.sh install searxng-src && \
-    ./utils/searxng.sh install packages && \
-    ./utils/searxng.sh install pyenv && \
-    ./utils/searxng.sh install settings && \
-    ./utils/searxng.sh install uwsgi
+    sudo -H ./utils/searxng.sh install searxng-src && \
+    sudo -H ./utils/searxng.sh install packages && \
+    sudo -H ./utils/searxng.sh install pyenv && \
+    sudo -H ./utils/searxng.sh install settings && \
+    sudo -H ./utils/searxng.sh install uwsgi
 
 # Exponha as portas necessárias
 EXPOSE 8080
