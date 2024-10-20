@@ -1,4 +1,3 @@
-# Use Ubuntu como base
 FROM ubuntu:22.04
 
 # Defina variáveis de ambiente
@@ -17,6 +16,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     python3-pip \
     git \
     uwsgi \
+    sudo \
     systemctl \
     wget \
     curl \
