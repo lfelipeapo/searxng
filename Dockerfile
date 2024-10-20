@@ -23,6 +23,8 @@ WORKDIR /usr/local/searxng
 
 COPY requirements.txt ./requirements.txt
 
+RUN apk update && apk add git
+
 RUN apk add --no-cache -t build-dependencies \
     build-base \
     py3-setuptools \
@@ -44,7 +46,7 @@ RUN apk add --no-cache -t build-dependencies \
     uwsgi \
     uwsgi-python3 \
     brotli
-
+    
 # For 32bit arm architecture install pydantic from the alpine repos instead of requirements.txt
 ARG TARGETARCH
 RUN if [ "$TARGETARCH" = "arm" ]; then \
