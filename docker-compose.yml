@@ -13,4 +13,4 @@ services:
     volumes:
       - ./settings.yml:/etc/searxng/settings.yml
       - ./requirements.txt:/usr/local/searxng/searxng-src/requirements.txt
-    command: ["sh", "-c", "source /usr/local/searxng/searx-pyenv/bin/activate && python searx/webapp.py"]
+    command: ["/bin/bash", "-c", "source /usr/local/searxng/searx-pyenv/bin/activate && python searx/webapp.py"]
