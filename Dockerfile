@@ -1,4 +1,3 @@
-
 FROM python:3.9-slim
 
 # Install necessary system dependencies
@@ -37,7 +36,7 @@ RUN python3 -m venv /usr/local/searxng/searx-pyenv && \
 # Activate virtual environment and install dependencies
 RUN /usr/local/searxng/searx-pyenv/bin/pip install -U pip setuptools wheel pyyaml && \
     cd /usr/local/searxng/searxng-src && \
-    /usr/local/searxng/searx-pyenv/bin/pip install --use-pep517 --no-build-isolation -r /app/requirements.txt
+    /usr/local/searxng/searx-pyenv/bin/pip install --use-pep517 --no-build-isolation -r requirements.txt
 
 # Install additional dependencies
 RUN /usr/local/searxng/searx-pyenv/bin/pip install uwsgi
