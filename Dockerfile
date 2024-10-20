@@ -5,7 +5,9 @@ FROM ubuntu:22.04
 ENV SEARXNG_HOME=/srv/searxng
 
 # Defina o fuso horário
-RUN echo "America/Sao_Paulo" > /etc/timezone && \
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y tzdata && \
+    echo "America/Sao_Paulo" > /etc/timezone && \
     dpkg-reconfigure -f noninteractive tzdata
 
 # Atualize o sistema e instale o Python 3.9 e outras dependências
