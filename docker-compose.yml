@@ -9,8 +9,8 @@ services:
     ports:
       - "8888:8888"
     environment:
-      SEARXNG_SETTINGS_PATH: "/usr/local/searxng/settings.yml"
+      SEARXNG_SETTINGS_PATH: "/usr/local/searxng/searxng-src/settings.yml"
     volumes:
-      - ./settings.yml:/usr/local/searxng/settings.yml
-      - ./requirements.txt:/usr/local/searxng/requirements.txt
+      - ./settings.yml:/usr/local/searxng/searxng-src/settings.yml
+      - ./requirements.txt:/usr/local/searxng/searxng-src/requirements.txt
     command: ["/bin/bash", "-c", ". /usr/local/searxng/searx-pyenv/bin/activate && python searxng-src/searx/webapp.py"]
