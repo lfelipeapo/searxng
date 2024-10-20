@@ -26,6 +26,10 @@ COPY requirements.txt ./requirements.txt
 
 RUN apk update && apk add git
 
+RUN git config --global --add safe.directory /usr/local/searxng/searx
+
+RUN git clone https://github.com/searxng/searxng.git /usr/local/searxng/searx
+
 RUN apk add --no-cache -t build-dependencies \
     build-base \
     py3-setuptools \
