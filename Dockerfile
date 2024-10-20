@@ -1,4 +1,5 @@
 FROM alpine:3.20
+
 ENTRYPOINT ["/sbin/tini","--","/usr/local/searxng/dockerfiles/docker-entrypoint.sh"]
 EXPOSE 8080
 VOLUME /etc/searxng
@@ -46,7 +47,7 @@ RUN apk add --no-cache -t build-dependencies \
     uwsgi \
     uwsgi-python3 \
     brotli
-    
+
 # For 32bit arm architecture install pydantic from the alpine repos instead of requirements.txt
 ARG TARGETARCH
 RUN if [ "$TARGETARCH" = "arm" ]; then \
@@ -66,6 +67,7 @@ ARG VERSION_GITCOMMIT=unknown
 
 RUN su searxng -c "/usr/bin/python3 -m compileall -q searx" \
  && touch -c --date=@${TIMESTAMP_SETTINGS} searx/settings.yml \
+ && sed -i "s|ultrasecretkey|$(openssl rand -hex 32)|g" searx/settings.yml \
  && touch -c --date=@${TIMESTAMP_UWSGI} dockerfiles/uwsgi.ini \
  && find /usr/local/searxng/searx/static -a \( -name '*.html' -o -name '*.css' -o -name '*.js' \
     -o -name '*.svg' -o -name '*.ttf' -o -name '*.eot' \) \
@@ -92,7 +94,4 @@ LABEL maintainer="searxng <${GIT_URL}>" \
       org.opencontainers.image.title="searxng" \
       org.opencontainers.image.version="${SEARXNG_DOCKER_TAG}" \
       org.opencontainers.image.url="${LABEL_VCS_URL}" \
-      org.opencontainers.image.revision=${LABEL_VCS_REF} \
-      org.opencontainers.image.source=${LABEL_VCS_URL} \
-      org.opencontainers.image.created="${LABEL_DATE}" \
-      org.opencontainers.image.documentation="https://github.com/searxng/searxng-docker"
+      org
