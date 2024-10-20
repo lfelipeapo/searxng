@@ -39,6 +39,8 @@ RUN git config --global --add safe.directory /srv/searxng
 # Instale o SearXNG e suas dependências
 RUN chmod +x ./utils/searxng.sh && \
     sudo -H ./utils/searxng.sh install searxng-src && \
+    sudo -H mkdir -p /usr/local/searxng/searxng-src && \
+    sudo -H chown -R searxng:searxng /usr/local/searxng/searxng-src && \
     sudo -H ./utils/searxng.sh install packages && \
     sudo -H ./utils/searxng.sh install pyenv && \
     sudo -H ./utils/searxng.sh install settings && \
