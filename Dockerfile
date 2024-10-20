@@ -4,9 +4,13 @@ FROM ubuntu:22.04
 # Defina variáveis de ambiente
 ENV SEARXNG_HOME=/srv/searxng
 
+# Defina o fuso horário
+RUN echo "America/Sao_Paulo" > /etc/timezone && \
+    dpkg-reconfigure -f noninteractive tzdata
+
 # Atualize o sistema e instale o Python 3.9 e outras dependências
-RUN apt-get update && \
-    apt-get install -y \
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y \
     python3.9 \
     python3-pip \
     git \
