@@ -17,7 +17,6 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     python3-pip \
     git \
     uwsgi \
-    sudo \
     systemctl \
     wget \
     curl \
@@ -34,20 +33,23 @@ RUN git clone https://github.com/lfelipeapo/searxng.git $SEARXNG_HOME
 WORKDIR $SEARXNG_HOME
 
 # Adicione o diretório do repositório à lista de diretórios seguros do Git
-RUN git config --global --add safe.directory /srv/searxng
+RUN git config --global --add safe.directory $SEARXNG_HOME
 
 # Instale o SearXNG e suas dependências
 RUN chmod +x ./utils/searxng.sh && \
-    sudo -H ./utils/searxng.sh install searxng-src && \
-    sudo -H mkdir -p /usr/local/searxng/searxng-src && \
-    sudo -H chown -R searxng:searxng /usr/local/searxng/searxng-src && \
-    sudo -H ./utils/searxng.sh install packages && \
-    sudo -H ./utils/searxng.sh install pyenv && \
-    sudo -H ./utils/searxng.sh install settings && \
-    sudo -H ./utils/searxng.sh install uwsgi
+    ./utils/searxng.sh install searxng-src && \
+    mkdir -p /usr/local/searxng/searxng-src && \
+    chown -R searxng:searxng /usr/local/searxng/searxng-src && \
+    ./utils/searxng.sh install packages && \
+    ./utils/searxng.sh install pyenv && \
+    ./utils/searxng.sh install settings && \
+    ./utils/searxng.sh install uwsgi
 
 # Exponha as portas necessárias
 EXPOSE 8080
+
+# Defina o usuário para 'searxng' antes de executar o comando final
+USER searxng
 
 # Comando para executar o SearXNG
 CMD ["uwsgi", "--ini", "searxng.ini"]
