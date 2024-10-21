@@ -34,7 +34,7 @@ RUN git clone https://github.com/lfelipeapo/searxng.git searxng-src
 
 # Instale o SearXNG
 WORKDIR /usr/local/searxng/searxng-src
-RUN ./utils/searxng.sh install --skip-clone
+RUN sudo -H ./utils/searxng.sh install all
 
 # Mova a configuração do uwsgi para o diretório correto
 RUN mkdir -p /etc/uwsgi && cp -r /usr/local/searxng/searxng-src/etc/uwsgi/* /etc/uwsgi/
