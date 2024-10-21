@@ -1,7 +1,7 @@
 FROM alpine:3.20
 
-# Instale o libcap, o Git e dependências para construir o ambiente
-RUN apk add --no-cache libcap git python3 py3-pip py3-virtualenv
+# Instale o libcap, o Git, o Python e outras dependências de compilação
+RUN apk add --no-cache libcap git python3 py3-pip py3-virtualenv build-base linux-headers python3-dev
 
 # Copie o Tini e configure as capacidades necessárias
 COPY --from=krallin/ubuntu-tini:trusty /usr/local/bin/tini /sbin/tini
@@ -28,31 +28,30 @@ ENV INSTANCE_NAME=searxng \
     UWSGI_SETTINGS_PATH=/etc/searxng/uwsgi.ini \
     UWSGI_WORKERS=%k \
     UWSGI_THREADS=4 \
-    PORT=8080
+    PORT=8080 \
+    VENV_PATH=/usr/local/searxng/venv
 
 WORKDIR /usr/local/searxng
 
-# Copie todos os arquivos, incluindo o diretório .git
+# Crie o ambiente virtual
+RUN python3 -m venv $VENV_PATH && \
+    $VENV_PATH/bin/pip install --upgrade pip
+
+# Copie os arquivos do projeto
 COPY . .
 
-# Crie um ambiente virtual para instalar as dependências Python
-RUN python3 -m venv /usr/local/searxng/venv && \
-    . /usr/local/searxng/venv/bin/activate && \
-    pip install --upgrade pip
-
-# Instale as dependências do Python no ambiente virtual
+# Instalar dependências do Python no ambiente virtual
 ARG TARGETARCH
 RUN if [ "$TARGETARCH" = "arm" ]; then \
-        . /usr/local/searxng/venv/bin/activate && \
         apk add --no-cache py3-pydantic && \
-        pip install --no-cache-dir -r <(grep -v '^pydantic' requirements.txt); \
+        $VENV_PATH/bin/pip install --no-cache-dir -r <(grep -v '^pydantic' requirements.txt); \
     else \
-        . /usr/local/searxng/venv/bin/activate && \
-        pip install --no-cache-dir -r requirements.txt; \
+        apk add --no-cache gcc musl-dev && \
+        $VENV_PATH/bin/pip install --no-cache-dir -r requirements.txt; \
     fi
 
-# Ative o ambiente virtual no entrypoint para garantir que as dependências sejam usadas
-ENV PATH="/usr/local/searxng/venv/bin:$PATH"
+# Defina o ambiente PATH para incluir o venv
+ENV PATH="$VENV_PATH/bin:$PATH"
 
 RUN apk del .build-deps \
  && rm -rf /root/.cache
