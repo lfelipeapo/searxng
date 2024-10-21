@@ -46,15 +46,12 @@ RUN if [ "$TARGETARCH" = "arm" ]; then \
         apk add --no-cache py3-pydantic && \
         $VENV_PATH/bin/pip install --no-cache-dir -r <(grep -v '^pydantic' requirements.txt); \
     else \
-        apk add --no-cache gcc musl-dev && \
         $VENV_PATH/bin/pip install --no-cache-dir -r requirements.txt; \
     fi
 
-# Defina o ambiente PATH para incluir o venv
-ENV PATH="$VENV_PATH/bin:$PATH"
-
-RUN apk del .build-deps \
- && rm -rf /root/.cache
+# Remova pacotes de compilação após a instalação das dependências
+RUN apk del build-base linux-headers python3-dev gcc musl-dev \
+    && rm -rf /root/.cache
 
 # Configure o settings.yml e gere uma secret_key
 RUN mkdir -p /etc/searxng && \
