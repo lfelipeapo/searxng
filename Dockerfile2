@@ -50,8 +50,10 @@ RUN sudo -H -u searxng -i \
 RUN sudo -H mkdir -p "/etc/searxng" && \
     cp "/usr/local/searxng/searxng-src/utils/templates/etc/searxng/settings.yml" "/etc/searxng/settings.yml"
 
-# Mova a configuração do uwsgi para o diretório correto
-RUN mkdir -p /etc/uwsgi && cp -r /usr/local/searxng/searxng-src/etc/uwsgi/* /etc/uwsgi/
+# Verifique e mova a configuração do uwsgi para o diretório correto, se existir
+RUN if [ -d "/usr/local/searxng/searxng-src/etc/uwsgi" ]; then \
+        mkdir -p /etc/uwsgi && cp -r /usr/local/searxng/searxng-src/etc/uwsgi/* /etc/uwsgi/; \
+    fi
 
 # Exponha a porta necessária
 EXPOSE 8080
