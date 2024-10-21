@@ -23,7 +23,8 @@ RUN apt-get update && apt-get install -y \
     wget \
     curl \
     systemctl \
-    python-is-python3
+    python-is-python3 \
+    redis-server
 
 # Crie um usuário para o SearXNG se ele ainda não existir
 RUN id -u searxng || useradd --shell /bin/bash --system --home-dir "/usr/local/searxng" --comment 'Privacy-respecting metasearch engine' searxng
@@ -44,6 +45,7 @@ RUN sudo -H -u searxng -i \
     pip install -U setuptools && \
     pip install -U wheel && \
     pip install -U pyyaml && \
+    pip install tomli && \
     pip install -r requirements.txt && \
     pip install --use-pep517 --no-build-isolation -e .
 
@@ -69,6 +71,15 @@ RUN mkdir -p /etc/uwsgi && \
 
 # Configurar o Git para permitir o diretório
 RUN git config --system --add safe.directory /usr/local/searxng/searxng-src
+
+# Configurar o Redis
+RUN mkdir -p /usr/local/searxng-redis && \
+    echo "port 6379" > /usr/local/searxng-redis/redis.conf && \
+    echo "unixsocket /usr/local/searxng-redis/run/redis.sock" >> /usr/local/searxng-redis/redis.conf && \
+    echo "unixsocketperm 700" >> /usr/local/searxng-redis/redis.conf && \
+    mkdir -p /usr/local/searxng-redis/run && \
+    chown -R redis:redis /usr/local/searxng-redis && \
+    service redis-server start
 
 # Exponha a porta necessária
 EXPOSE 8080
