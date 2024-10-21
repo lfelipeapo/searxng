@@ -15,14 +15,12 @@ query_filters:
     site: "www.zoom.com.br OR www.buscape.com.br"
     
 doi_resolvers:
-  default_doi_resolver: "https://doi.org/"
+  - https://doi.org/
 
 server:
   secret_key: "iEd2t<ioq5"
   limiter: false
   image_proxy: true
   
-use_default_settings: true
-
 ui:
   static_use_hash: true
