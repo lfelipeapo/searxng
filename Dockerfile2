@@ -50,10 +50,20 @@ RUN sudo -H -u searxng -i \
 RUN sudo -H mkdir -p "/etc/searxng" && \
     cp "/usr/local/searxng/searxng-src/utils/templates/etc/searxng/settings.yml" "/etc/searxng/settings.yml"
 
-# Verifique e mova a configuração do uwsgi para o diretório correto, se existir
-RUN if [ -d "/usr/local/searxng/searxng-src/etc/uwsgi" ]; then \
-        mkdir -p /etc/uwsgi && cp -r /usr/local/searxng/searxng-src/etc/uwsgi/* /etc/uwsgi/; \
-    fi
+# Crie o arquivo uwsgi.ini
+RUN mkdir -p /etc/uwsgi && \
+    echo "[uwsgi]" > /etc/uwsgi/uwsgi.ini && \
+    echo "uid = searxng" >> /etc/uwsgi/uwsgi.ini && \
+    echo "gid = searxng" >> /etc/uwsgi/uwsgi.ini && \
+    echo "chdir = /usr/local/searxng/searxng-src/searx" >> /etc/uwsgi/uwsgi.ini && \
+    echo "env = SEARXNG_SETTINGS_PATH=/etc/searxng/settings.yml" >> /etc/uwsgi/uwsgi.ini && \
+    echo "module = searx.webapp" >> /etc/uwsgi/uwsgi.ini && \
+    echo "virtualenv = /usr/local/searxng/searx-pyenv" >> /etc/uwsgi/uwsgi.ini && \
+    echo "http-socket = :8080" >> /etc/uwsgi/uwsgi.ini && \
+    echo "master = true" >> /etc/uwsgi/uwsgi.ini && \
+    echo "workers = 4" >> /etc/uwsgi/uwsgi.ini && \
+    echo "threads = 4" >> /etc/uwsgi/uwsgi.ini && \
+    echo "plugin = python3" >> /etc/uwsgi/uwsgi.ini
 
 # Exponha a porta necessária
 EXPOSE 8080
