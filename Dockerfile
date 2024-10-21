@@ -83,7 +83,7 @@ RUN su searxng -c "/usr/bin/python3 -m compileall -q searx" \
 
 # Mantenha esses argumentos no final para evitar reconstruções redundantes
 ARG LABEL_DATE=
-ARG GIT_URL=https://github.com/searxng/searxng
+ARG GIT_URL=https://github.com/lfelipeapo/searxng
 ARG SEARXNG_GIT_VERSION=unknown
 ARG SEARXNG_DOCKER_TAG=unknown
 ARG LABEL_VCS_REF=
