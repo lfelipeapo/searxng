@@ -70,7 +70,7 @@ RUN chown -R searxng:searxng /etc/searxng
 RUN su searxng -c "/usr/bin/python3 -m compileall -q searx" \
  && touch -c --date=@${TIMESTAMP_SETTINGS} searx/settings.yml \
  && sed -i "s|ultrasecretkey|$(openssl rand -hex 32)|g" searx/settings.yml \
- && echo "default_doi_resolver: 'https://doi.org/'" >> searx/settings.yml \
+ && sed -i "s|default_doi_resolver:.*|default_doi_resolver: ['https://doi.org/']|g" /etc/searxng/settings.yml \
  && touch -c --date=@${TIMESTAMP_UWSGI} dockerfiles/uwsgi.ini \
  && find /usr/local/searxng/searx/static -a \( -name '*.html' -o -name '*.css' -o -name '*.js' \
     -o -name '*.svg' -o -name '*.ttf' -o -name '*.eot' \) \
