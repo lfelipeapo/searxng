@@ -1,6 +1,9 @@
 FROM alpine:3.20
+
 ENTRYPOINT ["/sbin/tini","--","/usr/local/searxng/dockerfiles/docker-entrypoint.sh"]
+
 EXPOSE 8080
+
 VOLUME /etc/searxng
 
 ARG SEARXNG_GID=977
@@ -45,37 +48,47 @@ RUN apk add --no-cache -t build-dependencies \
     brotli \
     git
 
-# For 32bit arm architecture install pydantic from the alpine repos instead of requirements.txt
+# Para arquitetura arm 32 bits, instale pydantic dos repositórios alpine em vez do requirements.txt
 ARG TARGETARCH
 RUN if [ "$TARGETARCH" = "arm" ]; then \
-        apk add --no-cache py3-pydantic && pip install --no-cache --break-system-packages -r <(grep -v '^pydantic' requirements.txt); \
+        apk add --no-cache py3-pydantic && pip install --no-cache-dir -r <(grep -v '^pydantic' requirements.txt); \
     else \
-        pip install --no-cache --break-system-packages -r requirements.txt; \
+        pip install --no-cache-dir -r requirements.txt; \
     fi
- RUN apk del build-dependencies \
+
+RUN apk del build-dependencies \
  && rm -rf /root/.cache
 
-COPY --chown=searxng:searxng dockerfiles ./dockerfiles
-COPY --chown=searxng:searxng searx ./searx
+# Copie os diretórios necessários
+COPY --chown=lfelipeapo:searxng dockerfiles ./dockerfiles
+COPY --chown=lfelipeapo:searxng searx ./searx
+COPY --chown=lfelipeapo:searxng settings.yml ./settings.yml
 
 ARG TIMESTAMP_SETTINGS=0
 ARG TIMESTAMP_UWSGI=0
 ARG VERSION_GITCOMMIT=unknown
 
+# Copie o settings.yml para /etc/searxng e gere uma secret_key única
+RUN mkdir -p /etc/searxng && \
+    cp ./settings.yml /etc/searxng/settings.yml && \
+    chown -R searxng:searxng /etc/searxng && \
+    sed -i "s/ultrasecretkey/$(openssl rand -hex 16)/" /etc/searxng/settings.yml
+
 RUN su searxng -c "/usr/bin/python3 -m compileall -q searx" \
- && touch -c --date=@${TIMESTAMP_SETTINGS} searx/settings.yml \
+ && touch -c --date=@${TIMESTAMP_SETTINGS} settings.yml \
  && touch -c --date=@${TIMESTAMP_UWSGI} dockerfiles/uwsgi.ini \
  && find /usr/local/searxng/searx/static -a \( -name '*.html' -o -name '*.css' -o -name '*.js' \
     -o -name '*.svg' -o -name '*.ttf' -o -name '*.eot' \) \
     -type f -exec gzip -9 -k {} \+ -exec brotli --best {} \+
 
-# Keep these arguments at the end to prevent redundant layer rebuilds
+# Mantenha esses argumentos no final para evitar reconstruções redundantes
 ARG LABEL_DATE=
-ARG GIT_URL=unknown
+ARG GIT_URL=https://github.com/lfelipeapo/searxng
 ARG SEARXNG_GIT_VERSION=unknown
 ARG SEARXNG_DOCKER_TAG=unknown
 ARG LABEL_VCS_REF=
-ARG LABEL_VCS_URL=
+ARG LABEL_VCS_URL=${GIT_URL}
+
 LABEL maintainer="searxng <${GIT_URL}>" \
       description="A privacy-respecting, hackable metasearch engine." \
       version="${SEARXNG_GIT_VERSION}" \
