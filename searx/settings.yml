@@ -5,12 +5,13 @@ search:
   engines:
     - google
     - bing
+  default_doi_resolver: "sci-hub.se"
 query_filters:
   google:
     site: "www.zoom.com.br OR www.buscape.com.br"
 server:
   secret_key: "iEd2t<ioq5"
-  limiter: true
+  limiter: false
   image_proxy: true
 use_default_settings: true
 general:
