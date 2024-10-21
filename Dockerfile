@@ -32,6 +32,7 @@ ENV INSTANCE_NAME=searxng \
 
 WORKDIR /usr/local/searxng
 
+# Copie todos os arquivos, incluindo o diretório .git
 COPY . .
 
 # Obter informações do Git
@@ -39,6 +40,14 @@ RUN VERSION_GITCOMMIT=$(git rev-parse HEAD) && \
     SEARXNG_GIT_VERSION=$(git describe --tags --always) && \
     echo "VERSION_GITCOMMIT=${VERSION_GITCOMMIT}" >> /etc/environment && \
     echo "SEARXNG_GIT_VERSION=${SEARXNG_GIT_VERSION}" >> /etc/environment
+
+# Defina os argumentos de build para serem usados como variáveis de ambiente
+ARG VERSION_GITCOMMIT
+ARG SEARXNG_GIT_VERSION
+
+# Atribua os valores dos argumentos às variáveis de ambiente
+ENV VERSION_GITCOMMIT=${VERSION_GITCOMMIT}
+ENV SEARXNG_GIT_VERSION=${SEARXNG_GIT_VERSION}
 
 # Instalar dependências de build e runtime
 RUN apk add --no-cache --virtual .build-deps \
@@ -60,7 +69,7 @@ RUN apk add --no-cache --virtual .build-deps \
     uwsgi \
     uwsgi-python3 \
     brotli \
-    git
+    openssl
 
 # Instalar dependências Python
 ARG TARGETARCH
@@ -97,9 +106,6 @@ WORKDIR /usr/local/searxng
 # Defina as labels usando as variáveis de ambiente
 ARG GIT_URL="https://github.com/lfelipeapo/searxng"
 ARG LABEL_DATE="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
-
-ENV VERSION_GITCOMMIT
-ENV SEARXNG_GIT_VERSION
 
 LABEL maintainer="searxng <${GIT_URL}>" \
       description="A privacy-respecting, hackable metasearch engine." \
