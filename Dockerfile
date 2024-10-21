@@ -1,12 +1,5 @@
 FROM alpine:3.20
 
-# Instale o libcap, o Git, o Python e outras dependências de compilação
-RUN apk add --no-cache libcap git python3 py3-pip py3-virtualenv build-base linux-headers python3-dev
-
-# Copie o Tini e configure as capacidades necessárias
-COPY --from=krallin/ubuntu-tini:trusty /usr/local/bin/tini /sbin/tini
-RUN setcap 'cap_kill+ep' /sbin/tini
-
 ENTRYPOINT ["/sbin/tini","--","/usr/local/searxng/dockerfiles/docker-entrypoint.sh"]
 
 EXPOSE 8080
@@ -28,35 +21,56 @@ ENV INSTANCE_NAME=searxng \
     UWSGI_SETTINGS_PATH=/etc/searxng/uwsgi.ini \
     UWSGI_WORKERS=%k \
     UWSGI_THREADS=4 \
-    PORT=8080 \
-    VENV_PATH=/usr/local/searxng/venv
+    PORT=8080
 
 WORKDIR /usr/local/searxng
 
-# Crie o ambiente virtual
-RUN python3 -m venv $VENV_PATH && \
-    $VENV_PATH/bin/pip install --upgrade pip
+COPY requirements.txt ./requirements.txt
 
-# Copie os arquivos do projeto
-COPY . .
+RUN apk add --no-cache -t build-dependencies \
+    build-base \
+    py3-setuptools \
+    python3-dev \
+    libffi-dev \
+    libxslt-dev \
+    libxml2-dev \
+    openssl-dev \
+    tar \
+ && apk add --no-cache \
+    ca-certificates \
+    python3 \
+    py3-pip \
+    libxml2 \
+    libxslt \
+    openssl \
+    tini \
+    uwsgi \
+    uwsgi-python3 \
+    brotli \
+    git \
+    openssl
 
-# Corrija as permissões antes de compilar
-RUN chown -R searxng:searxng /usr/local/searxng
-
-# Instalar dependências do Python no ambiente virtual
+# Para arquitetura arm 32 bits, instale pydantic dos repositórios alpine em vez do requirements.txt
 ARG TARGETARCH
 RUN if [ "$TARGETARCH" = "arm" ]; then \
-        apk add --no-cache py3-pydantic && \
-        $VENV_PATH/bin/pip install --no-cache-dir -r <(grep -v '^pydantic' requirements.txt); \
+        apk add --no-cache py3-pydantic && pip install --no-cache-dir --break-system-packages -r <(grep -v '^pydantic' requirements.txt); \
     else \
-        $VENV_PATH/bin/pip install --no-cache-dir -r requirements.txt; \
+        pip install --no-cache-dir --break-system-packages -r requirements.txt; \
     fi
 
-# Remova pacotes de compilação após a instalação das dependências
-RUN apk del build-base linux-headers python3-dev gcc musl-dev \
-    && rm -rf /root/.cache
+RUN apk del build-dependencies \
+ && rm -rf /root/.cache
 
-# Configure o settings.yml e gere uma secret_key
+# Copie os diretórios necessários
+COPY --chown=searxng:searxng dockerfiles ./dockerfiles
+COPY --chown=searxng:searxng searx ./searx
+COPY --chown=searxng:searxng settings.yml ./settings.yml
+
+ARG TIMESTAMP_SETTINGS=0
+ARG TIMESTAMP_UWSGI=0
+ARG VERSION_GITCOMMIT=unknown
+
+# Copie o settings.yml para /etc/searxng e gere uma secret_key única
 RUN mkdir -p /etc/searxng && \
     cp ./settings.yml /etc/searxng/settings.yml && \
     chown -R searxng:searxng /etc/searxng && \
@@ -64,25 +78,20 @@ RUN mkdir -p /etc/searxng && \
     sed -i "s/^  bind_address: .*/  bind_address: \"0.0.0.0\"/" /etc/searxng/settings.yml && \
     sed -i "s/^  port: .*/  port: ${PORT}/" /etc/searxng/settings.yml
 
-# Compilar os arquivos Python e ajustar permissões
 RUN su searxng -c "/usr/bin/python3 -m compileall -q searx" \
-    && chown -R searxng:searxng /usr/local/searxng/searx/__pycache__
-
-RUN touch -c --date=@0 settings.yml \
-    && touch -c --date=@0 dockerfiles/uwsgi.ini \
-    && find /usr/local/searxng/searx/static -a \( -name '*.html' -o -name '*.css' -o -name '*.js' \
+ && touch -c --date=@${TIMESTAMP_SETTINGS} settings.yml \
+ && touch -c --date=@${TIMESTAMP_UWSGI} dockerfiles/uwsgi.ini \
+ && find /usr/local/searxng/searx/static -a \( -name '*.html' -o -name '*.css' -o -name '*.js' \
     -o -name '*.svg' -o -name '*.ttf' -o -name '*.eot' \) \
     -type f -exec gzip -9 -k {} \+ -exec brotli --best {} \+
 
-# Altere para o usuário 'searxng'
-USER searxng
-
-# Defina o diretório de trabalho
-WORKDIR /usr/local/searxng
-
-# Defina as labels usando as variáveis de ambiente
-ARG GIT_URL="https://github.com/lfelipeapo/searxng"
-ARG LABEL_DATE="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+# Mantenha esses argumentos no final para evitar reconstruções redundantes
+ARG LABEL_DATE=
+ARG GIT_URL=https://github.com/lfelipeapo/searxng
+ARG SEARXNG_GIT_VERSION=unknown
+ARG SEARXNG_DOCKER_TAG=unknown
+ARG LABEL_VCS_REF=
+ARG LABEL_VCS_URL=${GIT_URL}
 
 LABEL maintainer="searxng <${GIT_URL}>" \
       description="A privacy-respecting, hackable metasearch engine." \
@@ -90,15 +99,15 @@ LABEL maintainer="searxng <${GIT_URL}>" \
       org.label-schema.schema-version="1.0" \
       org.label-schema.name="searxng" \
       org.label-schema.version="${SEARXNG_GIT_VERSION}" \
-      org.label-schema.url="${GIT_URL}" \
-      org.label-schema.vcs-ref=${VERSION_GITCOMMIT} \
-      org.label-schema.vcs-url=${GIT_URL} \
+      org.label-schema.url="${LABEL_VCS_URL}" \
+      org.label-schema.vcs-ref=${LABEL_VCS_REF} \
+      org.label-schema.vcs-url=${LABEL_VCS_URL} \
       org.label-schema.build-date="${LABEL_DATE}" \
       org.label-schema.usage="https://github.com/searxng/searxng-docker" \
       org.opencontainers.image.title="searxng" \
-      org.opencontainers.image.version="${SEARXNG_GIT_VERSION}" \
-      org.opencontainers.image.url="${GIT_URL}" \
-      org.opencontainers.image.revision=${VERSION_GITCOMMIT} \
-      org.opencontainers.image.source=${GIT_URL} \
+      org.opencontainers.image.version="${SEARXNG_DOCKER_TAG}" \
+      org.opencontainers.image.url="${LABEL_VCS_URL}" \
+      org.opencontainers.image.revision=${LABEL_VCS_REF} \
+      org.opencontainers.image.source=${LABEL_VCS_URL} \
       org.opencontainers.image.created="${LABEL_DATE}" \
       org.opencontainers.image.documentation="https://github.com/searxng/searxng-docker"
