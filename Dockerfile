@@ -20,7 +20,8 @@ ENV INSTANCE_NAME=searxng \
     SEARXNG_SETTINGS_PATH=/etc/searxng/settings.yml \
     UWSGI_SETTINGS_PATH=/etc/searxng/uwsgi.ini \
     UWSGI_WORKERS=%k \
-    UWSGI_THREADS=4
+    UWSGI_THREADS=4 \
+    PORT=8080
 
 WORKDIR /usr/local/searxng
 
@@ -46,7 +47,8 @@ RUN apk add --no-cache -t build-dependencies \
     uwsgi \
     uwsgi-python3 \
     brotli \
-    git
+    git \
+    openssl
 
 # Para arquitetura arm 32 bits, instale pydantic dos repositórios alpine em vez do requirements.txt
 ARG TARGETARCH
@@ -72,7 +74,9 @@ ARG VERSION_GITCOMMIT=unknown
 RUN mkdir -p /etc/searxng && \
     cp ./settings.yml /etc/searxng/settings.yml && \
     chown -R searxng:searxng /etc/searxng && \
-    sed -i "s/ultrasecretkey/$(openssl rand -hex 16)/" /etc/searxng/settings.yml
+    sed -i "s/ultrasecretkey/$(openssl rand -hex 16)/" /etc/searxng/settings.yml && \
+    sed -i "s/^  bind_address: .*/  bind_address: \"0.0.0.0\"/" /etc/searxng/settings.yml && \
+    sed -i "s/^  port: .*/  port: ${PORT}/" /etc/searxng/settings.yml
 
 RUN su searxng -c "/usr/bin/python3 -m compileall -q searx" \
  && touch -c --date=@${TIMESTAMP_SETTINGS} settings.yml \
