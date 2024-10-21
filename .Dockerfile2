@@ -1,0 +1,33 @@
+FROM ubuntu:22.04
+
+# Instale dependências
+RUN apt-get update && apt-get install -y \
+    python3-dev \
+    python3-babel \
+    python3-venv \
+    uwsgi \
+    uwsgi-plugin-python3 \
+    git \
+    build-essential \
+    libxslt-dev \
+    zlib1g-dev \
+    libffi-dev \
+    libssl-dev \
+    sudo
+
+# Crie um usuário para o SearXNG
+RUN adduser --system --group --home /usr/local/searxng searxng
+
+# Clone o repositório
+WORKDIR /usr/local/searxng
+RUN git clone https://github.com/lfelipeapo/searxng.git searxng-src
+
+# Instale o SearXNG
+WORKDIR /usr/local/searxng/searxng-src
+RUN sudo -H ./utils/searxng.sh install all
+
+# Exponha a porta necessária
+EXPOSE 8080
+
+# Comando para iniciar o serviço
+CMD ["uwsgi", "--ini", "/etc/searxng/uwsgi.ini"]
