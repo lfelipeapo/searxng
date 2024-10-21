@@ -67,6 +67,9 @@ ARG VERSION_GITCOMMIT=unknown
 RUN mkdir -p /etc/searxng
 RUN chown -R searxng:searxng /etc/searxng
 
+RUN mkdir -p /etc/searxng
+COPY searx/settings.yml /etc/searxng/settings.yml
+
 RUN su searxng -c "/usr/bin/python3 -m compileall -q searx" \
  && touch -c --date=@${TIMESTAMP_SETTINGS} /etc/searxng/settings.yml \
  && sed -i "s|ultrasecretkey|$(openssl rand -hex 32)|g" /etc/searxng/settings.yml \
