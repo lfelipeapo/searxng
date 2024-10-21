@@ -27,11 +27,12 @@ RUN apt-get update && apt-get install -y \
 
 # Crie um usuário para o SearXNG se ele ainda não existir
 RUN id -u searxng || useradd --shell /bin/bash --system --home-dir "/usr/local/searxng" --comment 'Privacy-respecting metasearch engine' searxng
-RUN mkdir "/usr/local/searxng" && chown -R "searxng:searxng" "/usr/local/searxng"
+RUN mkdir -p "/usr/local/searxng" && chown -R "searxng:searxng" "/usr/local/searxng"
 
 # Clone o repositório apenas se ele ainda não estiver clonado
 WORKDIR /usr/local/searxng
-RUN [ ! -d searxng-src ] && git clone https://github.com/lfelipeapo/searxng.git searxng-src || echo "Repositório já clonado."
+RUN git clone https://github.com/lfelipeapo/searxng.git searxng-src && \
+    chown -R searxng:searxng searxng-src
 
 # Instale o SearXNG
 WORKDIR /usr/local/searxng/searxng-src
@@ -48,7 +49,8 @@ RUN sudo -H -u searxng -i \
 
 # Configure o SearXNG
 RUN sudo -H mkdir -p "/etc/searxng" && \
-    cp "/usr/local/searxng/searxng-src/utils/templates/etc/searxng/settings.yml" "/etc/searxng/settings.yml"
+    cp "/usr/local/searxng/searxng-src/utils/templates/etc/searxng/settings.yml" "/etc/searxng/settings.yml" && \
+    sed -i 's/ultrasecretkey/'"$(openssl rand -hex 32)"'/' /etc/searxng/settings.yml
 
 # Crie o arquivo uwsgi.ini
 RUN mkdir -p /etc/uwsgi && \
@@ -64,6 +66,9 @@ RUN mkdir -p /etc/uwsgi && \
     echo "workers = 4" >> /etc/uwsgi/uwsgi.ini && \
     echo "threads = 4" >> /etc/uwsgi/uwsgi.ini && \
     echo "plugin = python3" >> /etc/uwsgi/uwsgi.ini
+
+# Configurar o Git para permitir o diretório
+RUN git config --system --add safe.directory /usr/local/searxng/searxng-src
 
 # Exponha a porta necessária
 EXPOSE 8080
