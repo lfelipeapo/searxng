@@ -68,10 +68,15 @@ RUN chown -R searxng:searxng /etc/searxng
 
 RUN su searxng -c "/usr/bin/python3 -m compileall -q searx" \
  && touch -c --date=@${TIMESTAMP_SETTINGS} searx/settings.yml \
+ && sed -i "s|ultrasecretkey|$(openssl rand -hex 32)|g" searx/settings.yml \
  && touch -c --date=@${TIMESTAMP_UWSGI} dockerfiles/uwsgi.ini \
  && find /usr/local/searxng/searx/static -a \( -name '*.html' -o -name '*.css' -o -name '*.js' \
     -o -name '*.svg' -o -name '*.ttf' -o -name '*.eot' \) \
     -type f -exec gzip -9 -k {} \+ -exec brotli --best {} \+
+
+RUN mkdir -p /etc/searxng/limiter
+RUN chown -R searxng:searxng /etc/searxng/limiter
+RUN touch /etc/searxng/limiter.toml
 
 # Keep these arguments at the end to prevent redundant layer rebuilds
 ARG LABEL_DATE=
