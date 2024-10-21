@@ -1,7 +1,7 @@
 FROM alpine:3.20
 
-# Instale o libcap e o Git para obter informações de versão
-RUN apk add --no-cache libcap git
+# Instale o libcap, o Git e dependências para construir o ambiente
+RUN apk add --no-cache libcap git python3 py3-pip py3-virtualenv
 
 # Copie o Tini e configure as capacidades necessárias
 COPY --from=krallin/ubuntu-tini:trusty /usr/local/bin/tini /sbin/tini
@@ -35,54 +35,24 @@ WORKDIR /usr/local/searxng
 # Copie todos os arquivos, incluindo o diretório .git
 COPY . .
 
-# Verifica se o .git existe. Se existir, obtem as informações de commit. Caso contrário, usa valores padrão.
-RUN if [ -d ".git" ]; then \
-        VERSION_GITCOMMIT=$(git rev-parse HEAD) && \
-        SEARXNG_GIT_VERSION=$(git describe --tags --always); \
-    else \
-        VERSION_GITCOMMIT="commit-desconhecido" && \
-        SEARXNG_GIT_VERSION="versao-desconhecida"; \
-    fi && \
-    echo "VERSION_GITCOMMIT=${VERSION_GITCOMMIT}" >> /etc/environment && \
-    echo "SEARXNG_GIT_VERSION=${SEARXNG_GIT_VERSION}" >> /etc/environment
+# Crie um ambiente virtual para instalar as dependências Python
+RUN python3 -m venv /usr/local/searxng/venv && \
+    . /usr/local/searxng/venv/bin/activate && \
+    pip install --upgrade pip
 
-# Defina os argumentos de build para serem usados como variáveis de ambiente
-ARG VERSION_GITCOMMIT="commit-desconhecido"
-ARG SEARXNG_GIT_VERSION="versao-desconhecida"
-
-# Atribua os valores dos argumentos às variáveis de ambiente
-ENV VERSION_GITCOMMIT=${VERSION_GITCOMMIT}
-ENV SEARXNG_GIT_VERSION=${SEARXNG_GIT_VERSION}
-
-# Instalar dependências de build e runtime
-RUN apk add --no-cache --virtual .build-deps \
-    build-base \
-    py3-setuptools \
-    python3-dev \
-    libffi-dev \
-    libxslt-dev \
-    libxml2-dev \
-    openssl-dev \
-    tar \
- && apk add --no-cache \
-    ca-certificates \
-    python3 \
-    py3-pip \
-    libxml2 \
-    libxslt \
-    openssl \
-    uwsgi \
-    uwsgi-python3 \
-    brotli \
-    openssl
-
-# Instalar dependências Python
+# Instale as dependências do Python no ambiente virtual
 ARG TARGETARCH
 RUN if [ "$TARGETARCH" = "arm" ]; then \
-        apk add --no-cache py3-pydantic && pip install --no-cache-dir -r <(grep -v '^pydantic' requirements.txt); \
+        . /usr/local/searxng/venv/bin/activate && \
+        apk add --no-cache py3-pydantic && \
+        pip install --no-cache-dir -r <(grep -v '^pydantic' requirements.txt); \
     else \
+        . /usr/local/searxng/venv/bin/activate && \
         pip install --no-cache-dir -r requirements.txt; \
     fi
+
+# Ative o ambiente virtual no entrypoint para garantir que as dependências sejam usadas
+ENV PATH="/usr/local/searxng/venv/bin:$PATH"
 
 RUN apk del .build-deps \
  && rm -rf /root/.cache
