@@ -50,6 +50,9 @@ RUN sudo -H mkdir -p "/etc/searxng" && \
     sed -i 's/ultrasecretkey/'"$(openssl rand -hex 32)"'/' /etc/searxng/settings.yml && \
     sed -i 's/redis:/# redis:/' /etc/searxng/settings.yml
 
+# Copiar limiter.toml
+COPY limiter.toml /etc/searxng/limiter.toml
+
 # Crie o arquivo uwsgi.ini
 RUN mkdir -p /etc/uwsgi && \
     echo "[uwsgi]" > /etc/uwsgi/uwsgi.ini && \
