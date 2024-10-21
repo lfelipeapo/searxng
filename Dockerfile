@@ -35,15 +35,20 @@ WORKDIR /usr/local/searxng
 # Copie todos os arquivos, incluindo o diretório .git
 COPY . .
 
-# Obter informações do Git
-RUN VERSION_GITCOMMIT=$(git rev-parse HEAD) && \
-    SEARXNG_GIT_VERSION=$(git describe --tags --always) && \
+# Verifica se o .git existe. Se existir, obtem as informações de commit. Caso contrário, usa valores padrão.
+RUN if [ -d ".git" ]; then \
+        VERSION_GITCOMMIT=$(git rev-parse HEAD) && \
+        SEARXNG_GIT_VERSION=$(git describe --tags --always); \
+    else \
+        VERSION_GITCOMMIT="commit-desconhecido" && \
+        SEARXNG_GIT_VERSION="versao-desconhecida"; \
+    fi && \
     echo "VERSION_GITCOMMIT=${VERSION_GITCOMMIT}" >> /etc/environment && \
     echo "SEARXNG_GIT_VERSION=${SEARXNG_GIT_VERSION}" >> /etc/environment
 
 # Defina os argumentos de build para serem usados como variáveis de ambiente
-ARG VERSION_GITCOMMIT
-ARG SEARXNG_GIT_VERSION
+ARG VERSION_GITCOMMIT="commit-desconhecido"
+ARG SEARXNG_GIT_VERSION="versao-desconhecida"
 
 # Atribua os valores dos argumentos às variáveis de ambiente
 ENV VERSION_GITCOMMIT=${VERSION_GITCOMMIT}
