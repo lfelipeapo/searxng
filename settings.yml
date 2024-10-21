@@ -1,3 +1,7 @@
+general:
+  debug: false
+  instance_name: "SearXNG"
+  
 search:
   safe_search: 2
   default_engine: 'google'
@@ -5,17 +9,20 @@ search:
   engines:
     - google
     - bing
-  default_doi_resolver: "sci-hub.se"
+
 query_filters:
   google:
     site: "www.zoom.com.br OR www.buscape.com.br"
+    
+doi_resolvers:
+  default_doi_resolver: "https://doi.org/"
+
 server:
   secret_key: "iEd2t<ioq5"
   limiter: false
   image_proxy: true
+  
 use_default_settings: true
-general:
-  debug: false
-  instance_name: "SearXNG"
+
 ui:
   static_use_hash: true
