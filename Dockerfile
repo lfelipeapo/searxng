@@ -51,18 +51,18 @@ RUN apk add --no-cache -t build-dependencies \
 # Para arquitetura arm 32 bits, instale pydantic dos repositórios alpine em vez do requirements.txt
 ARG TARGETARCH
 RUN if [ "$TARGETARCH" = "arm" ]; then \
-        apk add --no-cache py3-pydantic && pip install --no-cache-dir -r <(grep -v '^pydantic' requirements.txt); \
+        apk add --no-cache py3-pydantic && pip install --no-cache-dir --break-system-packages -r <(grep -v '^pydantic' requirements.txt); \
     else \
-        pip install --no-cache-dir -r requirements.txt; \
+        pip install --no-cache-dir --break-system-packages -r requirements.txt; \
     fi
 
 RUN apk del build-dependencies \
  && rm -rf /root/.cache
 
 # Copie os diretórios necessários
-COPY --chown=lfelipeapo:searxng dockerfiles ./dockerfiles
-COPY --chown=lfelipeapo:searxng searx ./searx
-COPY --chown=lfelipeapo:searxng settings.yml ./settings.yml
+COPY --chown=searxng:searxng dockerfiles ./dockerfiles
+COPY --chown=searxng:searxng searx ./searx
+COPY --chown=searxng:searxng settings.yml ./settings.yml
 
 ARG TIMESTAMP_SETTINGS=0
 ARG TIMESTAMP_UWSGI=0
@@ -83,7 +83,7 @@ RUN su searxng -c "/usr/bin/python3 -m compileall -q searx" \
 
 # Mantenha esses argumentos no final para evitar reconstruções redundantes
 ARG LABEL_DATE=
-ARG GIT_URL=https://github.com/lfelipeapo/searxng
+ARG GIT_URL=https://github.com/searxng/searxng
 ARG SEARXNG_GIT_VERSION=unknown
 ARG SEARXNG_DOCKER_TAG=unknown
 ARG LABEL_VCS_REF=
