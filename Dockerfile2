@@ -36,8 +36,11 @@ RUN git clone https://github.com/lfelipeapo/searxng.git searxng-src
 WORKDIR /usr/local/searxng/searxng-src
 RUN ./utils/searxng.sh install --skip-packages --skip-clone
 
+# Mova a configuração do uwsgi para o diretório correto
+RUN mkdir -p /etc/uwsgi && cp -r /usr/local/searxng/searxng-src/etc/uwsgi/* /etc/uwsgi/
+
 # Exponha a porta necessária
 EXPOSE 8080
 
 # Comando para iniciar o serviço
-CMD ["uwsgi", "--ini", "/etc/searxng/uwsgi.ini"]
+CMD ["uwsgi", "--ini", "/etc/uwsgi/uwsgi.ini"]
