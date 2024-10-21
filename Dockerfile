@@ -32,7 +32,6 @@ RUN apk add --no-cache -t build-dependencies \
     libxml2-dev \
     openssl-dev \
     tar \
-    git \
  && apk add --no-cache \
     ca-certificates \
     python3 \
@@ -43,7 +42,8 @@ RUN apk add --no-cache -t build-dependencies \
     tini \
     uwsgi \
     uwsgi-python3 \
-    brotli
+    brotli \
+    git
 
 # For 32bit arm architecture install pydantic from the alpine repos instead of requirements.txt
 ARG TARGETARCH
