@@ -40,6 +40,9 @@ RUN python3 -m venv $VENV_PATH && \
 # Copie os arquivos do projeto
 COPY . .
 
+# Corrija as permissões antes de compilar
+RUN chown -R searxng:searxng /usr/local/searxng
+
 # Instalar dependências do Python no ambiente virtual
 ARG TARGETARCH
 RUN if [ "$TARGETARCH" = "arm" ]; then \
@@ -61,10 +64,13 @@ RUN mkdir -p /etc/searxng && \
     sed -i "s/^  bind_address: .*/  bind_address: \"0.0.0.0\"/" /etc/searxng/settings.yml && \
     sed -i "s/^  port: .*/  port: ${PORT}/" /etc/searxng/settings.yml
 
+# Compilar os arquivos Python e ajustar permissões
 RUN su searxng -c "/usr/bin/python3 -m compileall -q searx" \
- && touch -c --date=@0 settings.yml \
- && touch -c --date=@0 dockerfiles/uwsgi.ini \
- && find /usr/local/searxng/searx/static -a \( -name '*.html' -o -name '*.css' -o -name '*.js' \
+    && chown -R searxng:searxng /usr/local/searxng/searx/__pycache__
+
+RUN touch -c --date=@0 settings.yml \
+    && touch -c --date=@0 dockerfiles/uwsgi.ini \
+    && find /usr/local/searxng/searx/static -a \( -name '*.html' -o -name '*.css' -o -name '*.js' \
     -o -name '*.svg' -o -name '*.ttf' -o -name '*.eot' \) \
     -type f -exec gzip -9 -k {} \+ -exec brotli --best {} \+
 
