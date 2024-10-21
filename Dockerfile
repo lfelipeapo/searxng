@@ -46,15 +46,14 @@ RUN apk add --no-cache -t build-dependencies \
     uwsgi-python3 \
     brotli
 
-# Para arquitetura ARM 32 bits, instala pydantic via repositório alpine
+# For 32bit arm architecture install pydantic from the alpine repos instead of requirements.txt
 ARG TARGETARCH
 RUN if [ "$TARGETARCH" = "arm" ]; then \
         apk add --no-cache py3-pydantic && pip install --no-cache --break-system-packages -r <(grep -v '^pydantic' requirements.txt); \
     else \
         pip install --no-cache --break-system-packages -r requirements.txt; \
     fi
-
-RUN apk del build-dependencies \
+ RUN apk del build-dependencies \
  && rm -rf /root/.cache
 
 COPY --chown=searxng:searxng dockerfiles ./dockerfiles
@@ -64,6 +63,9 @@ ARG TIMESTAMP_SETTINGS=0
 ARG TIMESTAMP_UWSGI=0
 ARG VERSION_GITCOMMIT=unknown
 
+RUN mkdir -p /etc/searxng
+RUN chown -R searxng:searxng /etc/searxng
+
 RUN su searxng -c "/usr/bin/python3 -m compileall -q searx" \
  && touch -c --date=@${TIMESTAMP_SETTINGS} searx/settings.yml \
  && touch -c --date=@${TIMESTAMP_UWSGI} dockerfiles/uwsgi.ini \
@@ -71,7 +73,7 @@ RUN su searxng -c "/usr/bin/python3 -m compileall -q searx" \
     -o -name '*.svg' -o -name '*.ttf' -o -name '*.eot' \) \
     -type f -exec gzip -9 -k {} \+ -exec brotli --best {} \+
 
-# Manter esses argumentos no final para evitar reconstrução desnecessária de camadas
+# Keep these arguments at the end to prevent redundant layer rebuilds
 ARG LABEL_DATE=
 ARG GIT_URL=unknown
 ARG SEARXNG_GIT_VERSION=unknown
