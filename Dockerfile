@@ -66,8 +66,6 @@ ARG VERSION_GITCOMMIT=unknown
 
 RUN mkdir -p /etc/searxng
 RUN chown -R searxng:searxng /etc/searxng
-
-RUN mkdir -p /etc/searxng
 COPY searx/settings.yml /etc/searxng/settings.yml
 
 RUN su searxng -c "/usr/bin/python3 -m compileall -q searx" \
