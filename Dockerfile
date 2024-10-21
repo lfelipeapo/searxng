@@ -59,6 +59,9 @@ RUN if [ "$TARGETARCH" = "arm" ]; then \
 
 COPY --chown=searxng:searxng dockerfiles ./dockerfiles
 COPY --chown=searxng:searxng searx ./searx
+RUN mkdir -p /etc/searxng/searx
+COPY --chown=searxng:searxng searx /etc/searxng/searx
+COPY --chown=searxng:searxng dockerfiles /etc/searxng/dockerfiles
 
 ARG TIMESTAMP_SETTINGS=0
 ARG TIMESTAMP_UWSGI=0
