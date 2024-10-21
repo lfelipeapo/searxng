@@ -19,7 +19,10 @@ RUN apt-get update && apt-get install -y \
     zlib1g-dev \
     libffi-dev \
     libssl-dev \
-    sudo
+    sudo \
+    wget \
+    curl \
+    systemctl
 
 # Crie um usuário para o SearXNG
 RUN adduser --system --group --home /usr/local/searxng searxng
@@ -30,7 +33,7 @@ RUN git clone https://github.com/lfelipeapo/searxng.git searxng-src
 
 # Instale o SearXNG
 WORKDIR /usr/local/searxng/searxng-src
-RUN sudo -H ./utils/searxng.sh install all
+RUN ./utils/searxng.sh install all
 
 # Exponha a porta necessária
 EXPOSE 8080
