@@ -152,3 +152,26 @@ search:
 query_in_title: false  # Evita que a consulta apareça no título da aba
 image_proxy: false  # Proxy de imagem desativado
 remove_trackers: true  # Remove rastreadores das URLs recebidas
+doi_resolvers:
+  oadoi.org: 'https://oadoi.org/'
+  doi.org: 'https://doi.org/'
+  doai.io: 'https://dissem.in/'
+  sci-hub.se: 'https://sci-hub.se/'
+  sci-hub.st: 'https://sci-hub.st/'
+  sci-hub.ru: 'https://sci-hub.ru/'
+
+default_doi_resolver: 'oadoi.org'
+outgoing:
+  request_timeout: 30.0
+  # the maximum timeout in seconds
+  # max_request_timeout: 10.0
+  # suffix of searx_useragent, could contain information like an email address
+  # to the administrator
+  useragent_suffix: ""
+  # The maximum number of concurrent connections that may be established.
+  pool_connections: 100
+  # Allow the connection pool to maintain keep-alive connections below this
+  # point.
+  pool_maxsize: 50
+  # See https://www.python-httpx.org/http2/
+  enable_http2: true
