@@ -51,7 +51,7 @@ search:
 
 # Configurações para resultados JSON (extração de dados como preço, marca, ean, modelo)
 engines:
-  - name: google_cse
+  - name: googlecse
     engine: google_custom
     shortcut: gcs
     api_key: 'AIzaSyB3qUC8PVvrkzOfEaf4Xip1ZKnF7sUNWgA'
