@@ -68,6 +68,8 @@ engines:
     cashback_xpath: "//span[@data-testid='product-card::cashback'] | //span[contains(@class, 'ProductCard_ProductCard_CashbackInfo')]"
     snippet_xpath: "//div[@data-testid='product-card::description'] | //div[contains(@class, 'ProductCard_ProductCard_Description')]"
     content_xpath: "//div[@data-testid='product-card::description'] | //div[contains(@class, 'ProductCard_ProductCard_Description')]"
+    rating_xpath: ".//div[@data-testid='product-card::rating']/text()"
+    merchant_xpath: ".//div[@data-testid='product-card::description']//h3[contains(@class, 'ProductCard_ProductCard_BestMerchant__JQo_V')]/text()"
     disabled: false
 
   #  # Motor do Buscapé
