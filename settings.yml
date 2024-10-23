@@ -72,7 +72,7 @@ engines:
 
    # Motor do Buscapé
   - name: buscape
-    engine: python
+    engine: buscape
     shortcut: bcp
     categories: ['general']
     paging: true
@@ -81,7 +81,7 @@ engines:
 
   # Motor do Zoom
   - name: zoom
-    engine: python
+    engine: zoom
     shortcut: zm
     categories: ['general']
     paging: true
