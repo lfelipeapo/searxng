@@ -6177,6 +6177,7 @@
   "bing news":"Bing Notícias faz parte do motor de busca Bing, da Microsoft. É um motor de busca e agregador especificamente para artigos de notícias por meio de várias fontes fiáveis da internet, incluindo New York Times, Washington Post e Reuters.",
   "bing videos":"Bing Vídeos é um serviço de pesquisa de vídeo e faz parte do mecanismo de busca Bing, da Microsoft. O serviço permite aos usuários pesquisar e visualizar vídeos através de várias websites. Bing Vídeos foi oficialmente lançado em 26 de setembro de 2007, batizado de Live Search Video e renomeado como Bing Vídeos em 1 de junho de 2009.",
   "bitbucket":"Bitbucket é um serviço de hospedagem de projetos controlados através do Mercurial, um sistema de controle de versões distribuído. É similar ao GitHub. Bitbucket têm um serviço grátis e um comercial. O serviço é escrito em Python. Num blog de 2008, de Bruce Eckel comparou Bitbucket favoravelmente ao sítio web Launchpad, que utiliza Bazaar.",
+  "buscape":"Buscapé é um site brasileiro que oferece comparações de preços de uma ampla variedade de produtos, ajudando os consumidores a encontrarem promoções e as melhores ofertas disponíveis no mercado.",
   "brave":"Brave é um navegador web livre e de código aberto desenvolvido pela Brave Software, Inc. O navegador é atualmente o único que adota o modelo de negócio pay-to-surf, bloqueando anúncios e rastreadores de sites. O navegador, que é baseado no navegador web Chromium, recompensa seus usuários por utilizá-lo, fazendo o pagamento através da criptomoeda BAT.",
   "brave.images":[
    "brave:pt",
@@ -6353,6 +6354,7 @@
   ],
   "yahoo news":"O Yahoo! News é um site de notícias que se originou como um agregador de notícias baseado na internet pelo Yahoo!. O site foi criado pelo engenheiro de software do Yahoo! Brad Clawsie em agosto de 1996. Os artigos vieram originalmente de serviços de notícias como Associated Press, Reuters, Fox News, Al Jazeera, ABC News, USA Today, CNN e BBC News.",
   "youtube":"YouTube é uma plataforma de compartilhamento de vídeos com sede em San Bruno, Califórnia. O serviço foi criado por três ex-funcionários do PayPal — Chad Hurley, Steve Chen e Jawed Karim — em fevereiro de 2005. A Google comprou o site em novembro de 2006 por US$ 1,65 bilhão. Desde então o YouTube funciona como uma das subsidiárias da Google.",
+  "zoom":"Zoom é uma plataforma de comparação de preços que permite aos usuários encontrarem as melhores promoções e ofertas de produtos eletrônicos, eletrodomésticos e diversos itens para o lar no Brasil.",
   "z-library":"Z-Library é uma shadow-library e um projeto de compartilhamento de arquivos para artigos de jornais acadêmicos, livros acadêmicos e livros de interesse geral. A Z-Library diz que o projeto fornece acesso a mais de 10 384 947 livros e 84 837 646 artigos. A Z-Library também afirma ser \"A maior biblioteca de e-books do mundo\" na página do projeto para livros digitais, bem como \"A maior loja de artigos científicos do mundo\" na página equivalente do projeto para artigos acadêmicos (booksc.org)."
  },
  "pt-BR":{
@@ -6415,6 +6417,10 @@
   "bitbucket":[
    "bitbucket:pt",
    "ref"
+  ],
+  "buscape": [
+      "buscape:pt",
+      "ref"
   ],
   "brave":[
    "brave:pt",
@@ -6779,6 +6785,10 @@
   "youtube":[
    "youtube:pt",
    "ref"
+  ],
+  "zoom": [
+    "zoom:pt",
+    "ref"
   ],
   "z-library":[
    "z-library:pt",
