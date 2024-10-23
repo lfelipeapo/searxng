@@ -29,30 +29,30 @@ engines:
   - name: buscape
     engine: xpath
     search_url: https://www.buscape.com.br/search?q={query}
-    title_xpath: //h2/a
-    url_xpath: //h2/a/@href
-    content_xpath: //p[@class='snippet']
+    title_xpath: "//h2[@data-testid='product-card::name']"
+    url_xpath: "//a[@data-testid='product-card::card']/@href"
+    price_xpath: "//p[@data-testid='product-card::price']"
+    description_xpath: "//div[@data-testid='product-card::description']"
+    image_xpath: "//img[@data-testid='product-card::image']/@src"
+    brand_model_xpath: "//h2[@data-testid='product-card::name']"
+    installment_xpath: "//span[@data-testid='product-card::installment']"
     disabled: false
 
   - name: zoom
     engine: xpath
     search_url: https://www.zoom.com.br/search?q={query}
-    title_xpath: //h2/a
-    url_xpath: //h2/a/@href
-    content_xpath: //p[@class='snippet']
+    title_xpath: "//h2[@data-testid='product-card::name']"
+    url_xpath: "//a[@data-testid='product-card::card']/@href"
+    price_xpath: "//p[@data-testid='product-card::price']"
+    description_xpath: "//div[@data-testid='product-card::description']"
+    image_xpath: "//img[@data-testid='product-card::image']/@src"
+    brand_model_xpath: "//h2[@data-testid='product-card::name']"
+    installment_xpath: "//span[@data-testid='product-card::installment']"
+    cashback_xpath: "//span[@data-testid='product-card::cashback']"
     disabled: false
 
-# Configurações gerais de busca
-search:
-  safe_search: 1  # SafeSearch: 0: Desligado, 1: Moderado, 2: Estrito
-  method: "POST"  # Usar método POST para consultas
-  default_lang: "pt-BR"  # Idioma padrão: Português Brasil
-  max_page: 0  # Número de páginas ilimitado
-
-# Configurações para resultados JSON (extração de dados como preço, marca, ean, modelo)
-engines:
   - name: googlecse
-    engine: google_custom
+    engine: json_engine
     shortcut: gcs
     api_key: 'AIzaSyB3qUC8PVvrkzOfEaf4Xip1ZKnF7sUNWgA'
     cx: '1717f12744a804305'
@@ -60,7 +60,18 @@ engines:
     paging: true
     timeout: 10.0
     categories: [general]
+    results_query: "items"  # Para acessar a lista de resultados de pesquisa
+    url_query: "link"  # O campo 'link' contém a URL do resultado
+    title_query: "title"  # O campo 'title' contém o título do resultado
+    content_query: "snippet"  # O campo 'snippet' contém um resumo do conteúdo
     disabled: false
+  
+# Configurações gerais de busca
+search:
+  safe_search: 1  # SafeSearch: 0: Desligado, 1: Moderado, 2: Estrito
+  method: "POST"  # Usar método POST para consultas
+  default_lang: "pt-BR"  # Idioma padrão: Português Brasil
+  max_page: 0  # Número de páginas ilimitado
 
 # Configurações gerais
 general:
