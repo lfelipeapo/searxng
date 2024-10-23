@@ -24,7 +24,7 @@ about = {
     "results": 'HTML',
 }
 
-categories = ['general']
+categories = 'general', 'web'
 paging = True
 max_page = 50
 
