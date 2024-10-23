@@ -106,8 +106,8 @@ search:
   autocomplete: "google"
   autocomplete_min: 4
   default_lang: "pt-BR"
-  ban_time_on_fail: 5
-  max_ban_time_on_fail: 120
+  ban_time_on_fail: 10
+  max_ban_time_on_fail: 300
   suspended_times:
     SearxEngineAccessDenied: 86400
     SearxEngineCaptcha: 86400
