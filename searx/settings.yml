@@ -36,6 +36,8 @@ engines:
     image_xpath: "//img[@data-testid='product-card::image']/@src"
     brand_model_xpath: "//h2[@data-testid='product-card::name']"
     installment_xpath: "//span[@data-testid='product-card::installment']"
+    snippet_xpath: "//div[@data-testid='product-card::description']"
+    content_xpath: "//div[@data-testid='product-card::description']"
     disabled: false
 
   - name: zoom
@@ -49,6 +51,8 @@ engines:
     brand_model_xpath: "//h2[@data-testid='product-card::name']"
     installment_xpath: "//span[@data-testid='product-card::installment']"
     cashback_xpath: "//span[@data-testid='product-card::cashback']"
+    snippet_xpath: "//div[@data-testid='product-card::description']"
+    content_xpath: "//div[@data-testid='product-card::description']"
     disabled: false
 
   - name: googlecse
@@ -149,6 +153,7 @@ ui:
 
 # Configurações de privacidade
 search:
+  default_lang: "pt-BR"
   safe_search: 0  # SafeSearch desativado
   method: "POST"  # Consultas feitas via método POST
   autocomplete: "google"  # Utiliza o autocompletar do Google
