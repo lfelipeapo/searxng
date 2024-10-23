@@ -3,26 +3,31 @@ engines:
   - name: google
     engine: google
     shortcut: go
+    image_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href"
     disabled: false
 
   - name: yahoo
     engine: yahoo
     shortcut: yh
+    image_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href"
     disabled: false
 
   - name: bing
     engine: bing
     shortcut: bi
+    image_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href"
     disabled: false
 
   - name: duckduckgo
     engine: duckduckgo
     shortcut: ddg
+    image_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href"
     disabled: false
 
   - name: brave
     engine: brave
     shortcut: br
+    image_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href"
     disabled: false
 
   # Motores de busca para produtos
@@ -30,31 +35,56 @@ engines:
     shortcut: bcp
     engine: xpath
     search_url: https://www.buscape.com.br/search?q={query}
-    title_xpath: "//h2[@data-testid='product-card::name']"
-    url_xpath: "//a[@data-testid='product-card::card']/@href"
-    price_xpath: "//p[@data-testid='product-card::price']"
-    description_xpath: "//div[@data-testid='product-card::description']"
-    image_xpath: "//img[@data-testid='product-card::image']/@src"
-    brand_model_xpath: "//h2[@data-testid='product-card::name']"
-    installment_xpath: "//span[@data-testid='product-card::installment']"
-    snippet_xpath: "//div[@data-testid='product-card::description']"
-    content_xpath: "//div[@data-testid='product-card::description']"
+    title_xpath: //h2[@data-testid='product-card::name'] | //h2[contains(@class,
+      'ProductCard_ProductCard_Name')]
+    url_xpath: //a[@data-testid='product-card::card']/@href | //a[contains(@class,
+      'ProductCard_ProductCard_Inner')]/@href
+    price_xpath: //p[@data-testid='product-card::price'] | //p[contains(@class,
+      'ProductCard_ProductCard_Price')]
+    description_xpath: //div[@data-testid='product-card::description'] |
+      //div[contains(@class, 'ProductCard_ProductCard_Description')]
+    image_xpath: //div[@data-testid='product-card::image']//img/@src |
+      //div[contains(@class, 'ProductCard_ProductCard_Image')]//img/@src
+    thumbnail_xpath: //div[@data-testid='product-card::image']//img/@src |
+      //div[contains(@class, 'ProductCard_ProductCard_Image')]//img/@src
+    brand_model_xpath: //h2[@data-testid='product-card::name'] |
+      //h2[contains(@class, 'ProductCard_ProductCard_Name')]
+    installment_xpath: //span[@data-testid='product-card::installment'] |
+      //span[contains(@class, 'ProductCard_ProductCard_Installment')]
+    cashback_xpath: //span[@data-testid='product-card::cashback'] |
+      //span[contains(@class, 'ProductCard_ProductCard_CashbackInfo')]
+    snippet_xpath: //div[@data-testid='product-card::description'] |
+      //div[contains(@class, 'ProductCard_ProductCard_Description')]
+    content_xpath: //div[@data-testid='product-card::description'] |
+      //div[contains(@class, 'ProductCard_ProductCard_Description')]
     disabled: false
 
   - name: zoom
     shortcut: zm
     engine: xpath
     search_url: https://www.zoom.com.br/search?q={query}
-    title_xpath: "//h2[@data-testid='product-card::name']"
-    url_xpath: "//a[@data-testid='product-card::card']/@href"
-    price_xpath: "//p[@data-testid='product-card::price']"
-    description_xpath: "//div[@data-testid='product-card::description']"
-    image_xpath: "//img[@data-testid='product-card::image']/@src"
-    brand_model_xpath: "//h2[@data-testid='product-card::name']"
-    installment_xpath: "//span[@data-testid='product-card::installment']"
-    cashback_xpath: "//span[@data-testid='product-card::cashback']"
-    snippet_xpath: "//div[@data-testid='product-card::description']"
-    content_xpath: "//div[@data-testid='product-card::description']"
+    title_xpath: //h2[@data-testid='product-card::name'] | //h2[contains(@class,
+      'ProductCard_ProductCard_Name')]
+    url_xpath: //a[@data-testid='product-card::card']/@href | //a[contains(@class,
+      'ProductCard_ProductCard_Inner')]/@href
+    price_xpath: //p[@data-testid='product-card::price'] | //p[contains(@class,
+      'ProductCard_ProductCard_Price')]
+    description_xpath: //div[@data-testid='product-card::description'] |
+      //div[contains(@class, 'ProductCard_ProductCard_Description')]
+    image_xpath: //div[@data-testid='product-card::image']//img/@src |
+      //div[contains(@class, 'ProductCard_ProductCard_Image')]//img/@src
+    thumbnail_xpath: //div[@data-testid='product-card::image']//img/@src |
+      //div[contains(@class, 'ProductCard_ProductCard_Image')]//img/@src
+    brand_model_xpath: //h2[@data-testid='product-card::name'] |
+      //h2[contains(@class, 'ProductCard_ProductCard_Name')]
+    installment_xpath: //span[@data-testid='product-card::installment'] |
+      //span[contains(@class, 'ProductCard_ProductCard_Installment')]
+    cashback_xpath: //span[@data-testid='product-card::cashback'] |
+      //span[contains(@class, 'ProductCard_ProductCard_CashbackInfo')]
+    snippet_xpath: //div[@data-testid='product-card::description'] |
+      //div[contains(@class, 'ProductCard_ProductCard_Description')]
+    content_xpath: //div[@data-testid='product-card::description'] |
+      //div[contains(@class, 'ProductCard_ProductCard_Description')]
     disabled: false
 
   - name: googlecse
@@ -70,6 +100,8 @@ engines:
     url_query: "link"  # O campo 'link' contém a URL do resultado
     title_query: "title"  # O campo 'title' contém o título do resultado
     content_query: "snippet"  # O campo 'snippet' contém um resumo do conteúdo
+    thumbnail_query: "pagemap.cse_thumbnail[0].src"  # Extração de uma miniatura, se disponível
+    image_query: "pagemap.cse_image[0].src"
     disabled: false
   
 # Configurações gerais de busca
