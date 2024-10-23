@@ -70,23 +70,24 @@ engines:
   #   content_xpath: "//div[@data-testid='product-card::description'] | //div[contains(@class, 'ProductCard_ProductCard_Description')]"
   #   disabled: false
 
+   # Motor do Buscapé
   - name: buscape
-    engine: xpath
+    engine: python
     shortcut: bcp
     categories: ['general']
     paging: true
     timeout: 10.0
     disabled: false
 
-  # Adicionando o motor do Zoom
+  # Motor do Zoom
   - name: zoom
-    engine: xpath
+    engine: python
     shortcut: zm
     categories: ['general']
     paging: true
     timeout: 10.0
     disabled: false
-
+    
   - name: googlecse
     engine: google
     shortcut: gcs
