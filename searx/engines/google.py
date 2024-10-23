@@ -367,11 +367,17 @@ def response(resp):
                 logger.debug('ignoring item from the result_xpath list: missing content of title "%s"', title)
                 continue
 
-            thumbnail = content_nodes[0].xpath('.//img/@src')
+            thumbnail = (
+                content_nodes[0].xpath("//meta[@property='og:image']/@content") or
+                content_nodes[0].xpath("//link[@rel='icon']/@href") or
+                content_nodes[0].xpath(".//img/@src")
+            )
+            
             if thumbnail:
                 thumbnail = thumbnail[0]
+                
                 if thumbnail.startswith('data:image'):
-                    img_id = content_nodes[0].xpath('.//img/@id')
+                    img_id = content_nodes[0].xpath(".//img/@id")
                     if img_id:
                         thumbnail = data_image_map.get(img_id[0])
             else:
