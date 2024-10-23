@@ -1,14 +1,5 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
-"""The JSON engine is a *generic* engine with which it is possible to configure
-engines in the settings.
-
-.. todo::
-
-   - The JSON engine needs documentation!!
-
-   - The parameters of the JSON engine should be adapted to those of the XPath
-     engine.
-
+"""The JSON engine is um engine genérico para configurar motores de busca no settings.
 """
 
 from collections.abc import Iterable
@@ -22,6 +13,16 @@ url_query = None
 url_prefix = ""
 content_query = None
 title_query = None
+description_query = None  # Adicionando o campo para description
+price_query = None  # Adicionando o campo para price
+rating_query = None  # Adicionando o campo para rating
+merchant_query = None  # Adicionando o campo para merchant
+image_query = None  # Adicionando o campo para image
+snippet_query = None  # Adicionando o campo para snippet
+brand_model_query = None  # Adicionando o campo para brand/model
+installment_query = None  # Adicionando o campo para installment
+cashback_query = None  # Adicionando o campo para cashback
+
 content_html_to_text = False
 title_html_to_text = False
 paging = False
@@ -30,22 +31,15 @@ results_query = ''
 
 cookies = {}
 headers = {}
-'''Some engines might offer different result based on cookies or headers.
-Possible use-case: To set safesearch cookie or header to moderate.'''
 
-# parameters for engines with paging support
-#
-# number of results on each page
-# (only needed if the site requires not a page number, but an offset)
+# Número de resultados por página
 page_size = 1
-# number of the first page (usually 0 or 1)
 first_page_num = 1
 
 
 def iterate(iterable):
     if isinstance(iterable, dict):
         items = iterable.items()
-
     else:
         items = enumerate(iterable)
     for index, value in items:
@@ -132,6 +126,15 @@ def response(resp):
             try:
                 url = query(result, url_query)[0]
                 title = query(result, title_query)[0]
+                description = query(result, description_query)[0] if description_query else ""
+                price = query(result, price_query)[0] if price_query else ""
+                rating = query(result, rating_query)[0] if rating_query else ""
+                merchant = query(result, merchant_query)[0] if merchant_query else ""
+                image = query(result, image_query)[0] if image_query else ""
+                snippet = query(result, snippet_query)[0] if snippet_query else ""
+                brand_model = query(result, brand_model_query)[0] if brand_model_query else ""
+                installment = query(result, installment_query)[0] if installment_query else ""
+                cashback = query(result, cashback_query)[0] if cashback_query else ""
             except:  # pylint: disable=bare-except
                 continue
             try:
@@ -142,7 +145,16 @@ def response(resp):
                 {
                     'url': url_prefix + to_string(url),
                     'title': title_filter(to_string(title)),
+                    'description': to_string(description),
                     'content': content_filter(to_string(content)),
+                    'price': to_string(price),
+                    'rating': to_string(rating),
+                    'merchant': to_string(merchant),
+                    'image': to_string(image),
+                    'snippet': to_string(snippet),
+                    'brand_model': to_string(brand_model),
+                    'installment': to_string(installment),
+                    'cashback': to_string(cashback)
                 }
             )
     else:
