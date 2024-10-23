@@ -58,7 +58,7 @@ engines:
     disabled: false
 
   - name: googlecse
-    engine: json_engine
+    engine: google
     shortcut: gcs
     api_key: 'AIzaSyB3qUC8PVvrkzOfEaf4Xip1ZKnF7sUNWgA'
     cx: '1717f12744a804305'
