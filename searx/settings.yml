@@ -35,58 +35,58 @@ engines:
     thumbnail_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href | //img/@src"
     disabled: false
 
-  # Motores de busca para produtos
-  # - name: buscape
-  #   shortcut: bcp
-  #   engine: xpath
-  #   search_url: https://www.buscape.com.br/search?q={query}
-  #   title_xpath: "//h2[@data-testid='product-card::name'] | //h2[contains(@class, 'ProductCard_ProductCard_Name')]"
-  #   url_xpath: "//a[@data-testid='product-card::card']/@href | //a[contains(@class, 'ProductCard_ProductCard_Inner')]/@href"
-  #   price_xpath: "//p[@data-testid='product-card::price'] | //p[contains(@class, 'ProductCard_ProductCard_Price')]"
-  #   description_xpath: "//div[@data-testid='product-card::description'] | //div[contains(@class, 'ProductCard_ProductCard_Description')]"
-  #   image_xpath: "//div[@data-testid='product-card::image']//img/@src | //div[contains(@class, 'ProductCard_ProductCard_Image')]//img/@src"
-  #   thumbnail_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href | //img/@src | //div[@data-testid='product-card::image']//img/@src | //div[contains(@class, 'ProductCard_ProductCard_Image')]//img/@src"
-  #   brand_model_xpath: "//h2[@data-testid='product-card::name'] | //h2[contains(@class, 'ProductCard_ProductCard_Name')]"
-  #   installment_xpath: "//span[@data-testid='product-card::installment'] | //span[contains(@class, 'ProductCard_ProductCard_Installment')]"
-  #   cashback_xpath: "//span[@data-testid='product-card::cashback'] | //span[contains(@class, 'ProductCard_ProductCard_CashbackInfo')]"
-  #   snippet_xpath: "//div[@data-testid='product-card::description'] | //div[contains(@class, 'ProductCard_ProductCard_Description')]"
-  #   content_xpath: "//div[@data-testid='product-card::description'] | //div[contains(@class, 'ProductCard_ProductCard_Description')]"
-  #   disabled: false
-
-  # - name: zoom
-  #   shortcut: zm
-  #   engine: xpath
-  #   search_url: https://www.zoom.com.br/search?q={query}
-  #   title_xpath: "//h2[@data-testid='product-card::name'] | //h2[contains(@class, 'ProductCard_ProductCard_Name')]"
-  #   url_xpath: "//a[@data-testid='product-card::card']/@href | //a[contains(@class, 'ProductCard_ProductCard_Inner')]/@href"
-  #   price_xpath: "//p[@data-testid='product-card::price'] | //p[contains(@class, 'ProductCard_ProductCard_Price')]"
-  #   description_xpath: "//div[@data-testid='product-card::description'] | //div[contains(@class, 'ProductCard_ProductCard_Description')]"
-  #   image_xpath: "//div[@data-testid='product-card::image']//img/@src | //div[contains(@class, 'ProductCard_ProductCard_Image')]//img/@src"
-  #   thumbnail_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href | //img/@src | //div[@data-testid='product-card::image']//img/@src | //div[contains(@class, 'ProductCard_ProductCard_Image')]//img/@src"
-  #   brand_model_xpath: "//h2[@data-testid='product-card::name'] | //h2[contains(@class, 'ProductCard_ProductCard_Name')]"
-  #   installment_xpath: "//span[@data-testid='product-card::installment'] | //span[contains(@class, 'ProductCard_ProductCard_Installment')]"
-  #   cashback_xpath: "//span[@data-testid='product-card::cashback'] | //span[contains(@class, 'ProductCard_ProductCard_CashbackInfo')]"
-  #   snippet_xpath: "//div[@data-testid='product-card::description'] | //div[contains(@class, 'ProductCard_ProductCard_Description')]"
-  #   content_xpath: "//div[@data-testid='product-card::description'] | //div[contains(@class, 'ProductCard_ProductCard_Description')]"
-  #   disabled: false
-
-   # Motor do Buscapé
+  Motores de busca para produtos
   - name: buscape
-    engine: buscape
     shortcut: bcp
-    categories: ['general']
-    paging: true
-    timeout: 10.0
+    engine: xpath
+    search_url: https://www.buscape.com.br/search?q={query}
+    title_xpath: "//h2[@data-testid='product-card::name'] | //h2[contains(@class, 'ProductCard_ProductCard_Name')]"
+    url_xpath: "//a[@data-testid='product-card::card']/@href | //a[contains(@class, 'ProductCard_ProductCard_Inner')]/@href"
+    price_xpath: "//p[@data-testid='product-card::price'] | //p[contains(@class, 'ProductCard_ProductCard_Price')]"
+    description_xpath: "//div[@data-testid='product-card::description'] | //div[contains(@class, 'ProductCard_ProductCard_Description')]"
+    image_xpath: "//div[@data-testid='product-card::image']//img/@src | //div[contains(@class, 'ProductCard_ProductCard_Image')]//img/@src"
+    thumbnail_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href | //img/@src | //div[@data-testid='product-card::image']//img/@src | //div[contains(@class, 'ProductCard_ProductCard_Image')]//img/@src"
+    brand_model_xpath: "//h2[@data-testid='product-card::name'] | //h2[contains(@class, 'ProductCard_ProductCard_Name')]"
+    installment_xpath: "//span[@data-testid='product-card::installment'] | //span[contains(@class, 'ProductCard_ProductCard_Installment')]"
+    cashback_xpath: "//span[@data-testid='product-card::cashback'] | //span[contains(@class, 'ProductCard_ProductCard_CashbackInfo')]"
+    snippet_xpath: "//div[@data-testid='product-card::description'] | //div[contains(@class, 'ProductCard_ProductCard_Description')]"
+    content_xpath: "//div[@data-testid='product-card::description'] | //div[contains(@class, 'ProductCard_ProductCard_Description')]"
     disabled: false
 
-  # Motor do Zoom
   - name: zoom
-    engine: zoom
     shortcut: zm
-    categories: ['general']
-    paging: true
-    timeout: 10.0
+    engine: xpath
+    search_url: https://www.zoom.com.br/search?q={query}
+    title_xpath: "//h2[@data-testid='product-card::name'] | //h2[contains(@class, 'ProductCard_ProductCard_Name')]"
+    url_xpath: "//a[@data-testid='product-card::card']/@href | //a[contains(@class, 'ProductCard_ProductCard_Inner')]/@href"
+    price_xpath: "//p[@data-testid='product-card::price'] | //p[contains(@class, 'ProductCard_ProductCard_Price')]"
+    description_xpath: "//div[@data-testid='product-card::description'] | //div[contains(@class, 'ProductCard_ProductCard_Description')]"
+    image_xpath: "//div[@data-testid='product-card::image']//img/@src | //div[contains(@class, 'ProductCard_ProductCard_Image')]//img/@src"
+    thumbnail_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href | //img/@src | //div[@data-testid='product-card::image']//img/@src | //div[contains(@class, 'ProductCard_ProductCard_Image')]//img/@src"
+    brand_model_xpath: "//h2[@data-testid='product-card::name'] | //h2[contains(@class, 'ProductCard_ProductCard_Name')]"
+    installment_xpath: "//span[@data-testid='product-card::installment'] | //span[contains(@class, 'ProductCard_ProductCard_Installment')]"
+    cashback_xpath: "//span[@data-testid='product-card::cashback'] | //span[contains(@class, 'ProductCard_ProductCard_CashbackInfo')]"
+    snippet_xpath: "//div[@data-testid='product-card::description'] | //div[contains(@class, 'ProductCard_ProductCard_Description')]"
+    content_xpath: "//div[@data-testid='product-card::description'] | //div[contains(@class, 'ProductCard_ProductCard_Description')]"
     disabled: false
+
+  #  # Motor do Buscapé
+  # - name: buscape
+  #   engine: buscape
+  #   shortcut: bcp
+  #   categories: ['general']
+  #   paging: true
+  #   timeout: 10.0
+  #   disabled: false
+
+  # # Motor do Zoom
+  # - name: zoom
+  #   engine: zoom
+  #   shortcut: zm
+  #   categories: ['general']
+  #   paging: true
+  #   timeout: 10.0
+  #   disabled: false
     
   - name: googlecse
     engine: google
@@ -112,6 +112,7 @@ search:
   method: "POST"  # Usar método POST para consultas
   default_lang: "pt-BR"  # Idioma padrão: Português Brasil
   max_page: 0  # Número de páginas ilimitado
+  
 
 # Configurações gerais
 general:
@@ -214,12 +215,12 @@ doi_resolvers:
 
 default_doi_resolver: 'oadoi.org'
 outgoing:
+  useragent_suffix: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"
   request_timeout: 30.0
   # the maximum timeout in seconds
   # max_request_timeout: 10.0
   # suffix of searx_useragent, could contain information like an email address
   # to the administrator
-  useragent_suffix: ""
   # The maximum number of concurrent connections that may be established.
   pool_connections: 100
   # Allow the connection pool to maintain keep-alive connections below this
