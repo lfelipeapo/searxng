@@ -27,6 +27,7 @@ engines:
 
   # Motores de busca para produtos
   - name: buscape
+    shortcut: bcp
     engine: xpath
     search_url: https://www.buscape.com.br/search?q={query}
     title_xpath: "//h2[@data-testid='product-card::name']"
@@ -41,6 +42,7 @@ engines:
     disabled: false
 
   - name: zoom
+    shortcut: zm
     engine: xpath
     search_url: https://www.zoom.com.br/search?q={query}
     title_xpath: "//h2[@data-testid='product-card::name']"
