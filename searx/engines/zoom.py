@@ -38,7 +38,7 @@ image_xpath = './/img[contains(@class, "ProductCard_ProductCard_Image")]/@src'
 brand_xpath = './/span[contains(@class, "ProductCard_ProductCard_Brand")]'
 installment_xpath = './/span[contains(@class, "ProductCard_ProductCard_Installment")]'
 review_score_xpath = './/div[contains(@class, "ProductCard_ProductCard_Rating")]//text()'
-
+best_seller_xpath = './/h3[contains(@class, "ProductCard_ProductCard_BestMerchant")]'
 
 def request(query, params):
     offset = (params['pageno'] - 1) * 10
@@ -65,7 +65,12 @@ def response(resp):
             brand = extract_text(eval_xpath_getindex(result, brand_xpath, 0))
             installment = extract_text(eval_xpath_getindex(result, installment_xpath, 0))
             review_score = extract_text(eval_xpath_getindex(result, review_score_xpath, 0))
+            best_seller = extract_text(eval_xpath_getindex(result, best_seller_xpath, 0))
             
+            # Extraindo o nome do melhor vendedor após "Menor preço via"
+            if best_seller and "Menor preço via" in best_seller:
+                best_seller = best_seller.replace("Menor preço via ", "").strip()
+
             results.append({
                 'title': title,
                 'url': url,
@@ -75,6 +80,7 @@ def response(resp):
                 'brand': brand,
                 'installment': installment,
                 'review_score': review_score,
+                'best_seller': best_seller,
             })
         except Exception as e:
             logger.error(e, exc_info=True)
