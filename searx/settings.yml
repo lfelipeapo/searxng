@@ -35,7 +35,7 @@ engines:
     thumbnail_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href | //img/@src"
     disabled: false
 
-  Motores de busca para produtos
+  # Motores de busca para produtos
   - name: buscape
     shortcut: bcp
     engine: xpath
