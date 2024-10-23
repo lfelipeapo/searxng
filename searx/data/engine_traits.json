@@ -1747,6 +1747,17 @@
       "zh-TW": "zh-tw"
     }
   },
+  "buscape": {
+    "all_locale": "clear",
+    "custom": {},
+    "data_type": "traits_v1",
+    "languages": {
+      "pt": "pt-br"
+    },
+    "regions": {
+      "pt": "pt-br"
+    }
+  },
   "brave": {
     "all_locale": "all",
     "custom": {
@@ -8773,5 +8784,16 @@
       "zu": "zulu"
     },
     "regions": {}
+  },
+  "zoom": {
+    "all_locale": "clear",
+    "custom": {},
+    "data_type": "traits_v1",
+    "languages": {
+      "pt": "pt-br"
+    },
+    "regions": {
+      "pt": "pt-br"
+    }
   }
 }
