@@ -24,7 +24,7 @@ about = {
     "results": 'HTML',
 }
 
-categories = ['shopping']
+categories = ['general']
 paging = True
 max_page = 50
 
