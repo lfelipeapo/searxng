@@ -4,30 +4,35 @@ engines:
     engine: google
     shortcut: go
     image_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href"
+    thumbnail_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href | //img/@src"
     disabled: false
 
   - name: yahoo
     engine: yahoo
     shortcut: yh
     image_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href"
+    thumbnail_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href | //img/@src"
     disabled: false
 
   - name: bing
     engine: bing
     shortcut: bi
     image_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href"
+    thumbnail_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href | //img/@src"
     disabled: false
 
   - name: duckduckgo
     engine: duckduckgo
     shortcut: ddg
     image_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href"
+    thumbnail_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href | //img/@src"
     disabled: false
 
   - name: brave
     engine: brave
     shortcut: br
     image_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href"
+    thumbnail_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href | //img/@src"
     disabled: false
 
   # Motores de busca para produtos
@@ -35,56 +40,34 @@ engines:
     shortcut: bcp
     engine: xpath
     search_url: https://www.buscape.com.br/search?q={query}
-    title_xpath: //h2[@data-testid='product-card::name'] | //h2[contains(@class,
-      'ProductCard_ProductCard_Name')]
-    url_xpath: //a[@data-testid='product-card::card']/@href | //a[contains(@class,
-      'ProductCard_ProductCard_Inner')]/@href
-    price_xpath: //p[@data-testid='product-card::price'] | //p[contains(@class,
-      'ProductCard_ProductCard_Price')]
-    description_xpath: //div[@data-testid='product-card::description'] |
-      //div[contains(@class, 'ProductCard_ProductCard_Description')]
-    image_xpath: //div[@data-testid='product-card::image']//img/@src |
-      //div[contains(@class, 'ProductCard_ProductCard_Image')]//img/@src
-    thumbnail_xpath: //div[@data-testid='product-card::image']//img/@src |
-      //div[contains(@class, 'ProductCard_ProductCard_Image')]//img/@src
-    brand_model_xpath: //h2[@data-testid='product-card::name'] |
-      //h2[contains(@class, 'ProductCard_ProductCard_Name')]
-    installment_xpath: //span[@data-testid='product-card::installment'] |
-      //span[contains(@class, 'ProductCard_ProductCard_Installment')]
-    cashback_xpath: //span[@data-testid='product-card::cashback'] |
-      //span[contains(@class, 'ProductCard_ProductCard_CashbackInfo')]
-    snippet_xpath: //div[@data-testid='product-card::description'] |
-      //div[contains(@class, 'ProductCard_ProductCard_Description')]
-    content_xpath: //div[@data-testid='product-card::description'] |
-      //div[contains(@class, 'ProductCard_ProductCard_Description')]
+    title_xpath: "//h2[@data-testid='product-card::name'] | //h2[contains(@class, 'ProductCard_ProductCard_Name')]"
+    url_xpath: "//a[@data-testid='product-card::card']/@href | //a[contains(@class, 'ProductCard_ProductCard_Inner')]/@href"
+    price_xpath: "//p[@data-testid='product-card::price'] | //p[contains(@class, 'ProductCard_ProductCard_Price')]"
+    description_xpath: "//div[@data-testid='product-card::description'] | //div[contains(@class, 'ProductCard_ProductCard_Description')]"
+    image_xpath: "//div[@data-testid='product-card::image']//img/@src | //div[contains(@class, 'ProductCard_ProductCard_Image')]//img/@src"
+    thumbnail_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href | //img/@src | //div[@data-testid='product-card::image']//img/@src | //div[contains(@class, 'ProductCard_ProductCard_Image')]//img/@src"
+    brand_model_xpath: "//h2[@data-testid='product-card::name'] | //h2[contains(@class, 'ProductCard_ProductCard_Name')]"
+    installment_xpath: "//span[@data-testid='product-card::installment'] | //span[contains(@class, 'ProductCard_ProductCard_Installment')]"
+    cashback_xpath: "//span[@data-testid='product-card::cashback'] | //span[contains(@class, 'ProductCard_ProductCard_CashbackInfo')]"
+    snippet_xpath: "//div[@data-testid='product-card::description'] | //div[contains(@class, 'ProductCard_ProductCard_Description')]"
+    content_xpath: "//div[@data-testid='product-card::description'] | //div[contains(@class, 'ProductCard_ProductCard_Description')]"
     disabled: false
 
   - name: zoom
     shortcut: zm
     engine: xpath
     search_url: https://www.zoom.com.br/search?q={query}
-    title_xpath: //h2[@data-testid='product-card::name'] | //h2[contains(@class,
-      'ProductCard_ProductCard_Name')]
-    url_xpath: //a[@data-testid='product-card::card']/@href | //a[contains(@class,
-      'ProductCard_ProductCard_Inner')]/@href
-    price_xpath: //p[@data-testid='product-card::price'] | //p[contains(@class,
-      'ProductCard_ProductCard_Price')]
-    description_xpath: //div[@data-testid='product-card::description'] |
-      //div[contains(@class, 'ProductCard_ProductCard_Description')]
-    image_xpath: //div[@data-testid='product-card::image']//img/@src |
-      //div[contains(@class, 'ProductCard_ProductCard_Image')]//img/@src
-    thumbnail_xpath: //div[@data-testid='product-card::image']//img/@src |
-      //div[contains(@class, 'ProductCard_ProductCard_Image')]//img/@src
-    brand_model_xpath: //h2[@data-testid='product-card::name'] |
-      //h2[contains(@class, 'ProductCard_ProductCard_Name')]
-    installment_xpath: //span[@data-testid='product-card::installment'] |
-      //span[contains(@class, 'ProductCard_ProductCard_Installment')]
-    cashback_xpath: //span[@data-testid='product-card::cashback'] |
-      //span[contains(@class, 'ProductCard_ProductCard_CashbackInfo')]
-    snippet_xpath: //div[@data-testid='product-card::description'] |
-      //div[contains(@class, 'ProductCard_ProductCard_Description')]
-    content_xpath: //div[@data-testid='product-card::description'] |
-      //div[contains(@class, 'ProductCard_ProductCard_Description')]
+    title_xpath: "//h2[@data-testid='product-card::name'] | //h2[contains(@class, 'ProductCard_ProductCard_Name')]"
+    url_xpath: "//a[@data-testid='product-card::card']/@href | //a[contains(@class, 'ProductCard_ProductCard_Inner')]/@href"
+    price_xpath: "//p[@data-testid='product-card::price'] | //p[contains(@class, 'ProductCard_ProductCard_Price')]"
+    description_xpath: "//div[@data-testid='product-card::description'] | //div[contains(@class, 'ProductCard_ProductCard_Description')]"
+    image_xpath: "//div[@data-testid='product-card::image']//img/@src | //div[contains(@class, 'ProductCard_ProductCard_Image')]//img/@src"
+    thumbnail_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href | //img/@src | //div[@data-testid='product-card::image']//img/@src | //div[contains(@class, 'ProductCard_ProductCard_Image')]//img/@src"
+    brand_model_xpath: "//h2[@data-testid='product-card::name'] | //h2[contains(@class, 'ProductCard_ProductCard_Name')]"
+    installment_xpath: "//span[@data-testid='product-card::installment'] | //span[contains(@class, 'ProductCard_ProductCard_Installment')]"
+    cashback_xpath: "//span[@data-testid='product-card::cashback'] | //span[contains(@class, 'ProductCard_ProductCard_CashbackInfo')]"
+    snippet_xpath: "//div[@data-testid='product-card::description'] | //div[contains(@class, 'ProductCard_ProductCard_Description')]"
+    content_xpath: "//div[@data-testid='product-card::description'] | //div[contains(@class, 'ProductCard_ProductCard_Description')]"
     disabled: false
 
   - name: googlecse
@@ -103,7 +86,8 @@ engines:
     thumbnail_query: "pagemap.cse_thumbnail[0].src"  # Extração de uma miniatura, se disponível
     image_query: "pagemap.cse_image[0].src"
     disabled: false
-  
+    thumbnail_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href | //img/@src"
+    
 # Configurações gerais de busca
 search:
   safe_search: 1  # SafeSearch: 0: Desligado, 1: Moderado, 2: Estrito
