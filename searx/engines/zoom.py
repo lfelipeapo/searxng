@@ -79,13 +79,23 @@ def response(resp):
     """Processa a resposta HTML e extrai os resultados conforme os seletores."""
     results = []
     dom = html.fromstring(resp.text)
+    
+    # Log para verificar o conteúdo do HTML
+    print("HTML do response:")
+    print(resp.text[:500])  # Exibe os primeiros 500 caracteres para verificar se estamos recebendo a resposta certa
+    
     products = eval_xpath_list(dom, products_xpath)
-    print(products)
+    
+    # Log para verificar quantos produtos foram encontrados
+    print(f"Total de produtos encontrados: {len(products)}")
 
     # Itera sobre os produtos encontrados pelo XPath
-    for product in products:
+    for i, product in enumerate(products):
         try:
-            print(product)
+            # Log para verificar o conteúdo de cada produto
+            print(f"\nProduto {i + 1}:")
+            print(html.tostring(product, pretty_print=True))  # Exibe o HTML do produto atual
+
             # Extraindo os campos usando os seletores XPath configurados
             title = extract_text(eval_xpath_getindex(product, title_xpath, 0))
             url = eval_xpath_getindex(product, url_xpath, 0, None)
@@ -115,19 +125,19 @@ def response(resp):
                 'thumbnail': thumbnail,
                 'cashback': cashback,
             }
-            print(result)
 
-            # Exibe um log informativo com o título e preço do produto
-            print(f'Produto encontrado: {title} | Preço: {price}')
+            # Log para verificar o conteúdo de cada resultado extraído
+            print(f"Resultado {i + 1}: {result}")
 
             results.append(result)
 
         except Exception as e:
             # Captura qualquer erro durante a extração dos campos e exibe no log
-            print(f"Erro ao processar o produto: {e}")
+            print(f"Erro ao processar o produto {i + 1}: {e}")
             continue
 
     # Exibe um log final com a quantidade de resultados processados
-    print(f'{len(results)} resultados extraídos com sucesso.')
+    print(f'\n{len(results)} resultados extraídos com sucesso.')
 
     return results
+
