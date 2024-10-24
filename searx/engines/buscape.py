@@ -93,7 +93,7 @@ def response(resp):
             description = extract_text(eval_xpath_getindex(product, description_xpath, 0))
             image = eval_xpath_getindex(product, image_xpath, 0, None)
             installment = extract_text(eval_xpath_getindex(product, installment_xpath, 0))
-            rating = extract_text(eval_xpath_getindex(product, rating_xpath, 0))
+            rating = extract_text(eval_xpath_getindex(product, rating_xpath, 0, None))  # Verificar se existe
             merchant = extract_text(eval_xpath_getindex(product, merchant_xpath, 0))
             thumbnail = extract_text(eval_xpath_getindex(product, thumbnail_xpath, 0))
             cashback = extract_text(eval_xpath_getindex(product, cashback_xpath, 0))
@@ -124,10 +124,11 @@ def response(resp):
 
         except Exception as e:
             # Captura qualquer erro durante a extração dos campos e exibe no log
-            print(f"Erro ao processar o produto: {e}", exc_info=True)
+            print(f"Erro ao processar o produto: {e}")
             continue
 
     # Exibe um log final com a quantidade de resultados processados
     print(f'{len(results)} resultados extraídos com sucesso.')
 
     return results
+
