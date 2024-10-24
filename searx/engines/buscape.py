@@ -80,10 +80,13 @@ def response(resp):
     """Processa a resposta HTML e extrai os resultados conforme os seletores."""
     results = []
     dom = html.fromstring(resp.text)
+    products = eval_xpath_list(dom, products_xpath)
+    print(products)
 
     # Itera sobre os produtos encontrados pelo XPath
-    for product in eval_xpath_list(dom, products_xpath):
+    for product in products:
         try:
+        	print(product)
             # Extraindo os campos usando os seletores XPath configurados
             title = extract_text(eval_xpath_getindex(product, title_xpath, 0))
             url = eval_xpath_getindex(product, url_xpath, 0, None)
@@ -113,18 +116,19 @@ def response(resp):
                 'thumbnail': thumbnail,
                 'cashback': cashback,
             }
+            print(result)
 
             # Exibe um log informativo com o título e preço do produto
-            logger.debug(f'Produto encontrado: {title} | Preço: {price}')
+            print(f'Produto encontrado: {title} | Preço: {price}')
 
             results.append(result)
 
         except Exception as e:
             # Captura qualquer erro durante a extração dos campos e exibe no log
-            logger.error(f"Erro ao processar o produto: {e}", exc_info=True)
+            print(f"Erro ao processar o produto: {e}", exc_info=True)
             continue
 
     # Exibe um log final com a quantidade de resultados processados
-    logger.info(f'{len(results)} resultados extraídos com sucesso.')
+    print(f'{len(results)} resultados extraídos com sucesso.')
 
     return results
