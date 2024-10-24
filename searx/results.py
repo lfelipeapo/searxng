@@ -13,8 +13,7 @@ from searx.engines import engines
 from searx.metrics import histogram_observe, counter_add, count_error
 
 
-CONTENT_LEN_IGNORED_CHARS_REGEX = re.compile(
-    r'[,;:!?\./\\\\ ()-_]', re.M | re.U)
+CONTENT_LEN_IGNORED_CHARS_REGEX = re.compile(r'[,;:!?\./\\\\ ()-_]', re.M | re.U)
 WHITESPACE_REGEX = re.compile('( |\t|\n)+', re.M | re.U)
 
 
@@ -201,76 +200,73 @@ class ResultContainer:
         self._lock = RLock()
 
     def extend(self, engine_name, results):  # pylint: disable=too-many-branches
-    if self._closed:
-        return
+        if self._closed:
+            return
 
-    standard_result_count = 0
-    error_msgs = set()
-    for result in list(results):
-        result['engine'] = engine_name
+        standard_result_count = 0
+        error_msgs = set()
+        for result in list(results):
+            result['engine'] = engine_name
 
-        # Tratando sugestões, respostas, correções e infoboxes
-        if 'suggestion' in result and self.on_result(result):
-            self.suggestions.add(result['suggestion'])
-        elif 'answer' in result and self.on_result(result):
-            self.answers[result['answer']] = result
-        elif 'correction' in result and self.on_result(result):
-            self.corrections.add(result['correction'])
-        elif 'infobox' in result and self.on_result(result):
-            self._merge_infobox(result)
-        elif 'number_of_results' in result and self.on_result(result):
-            self._number_of_results.append(result['number_of_results'])
-        elif 'engine_data' in result and self.on_result(result):
-            self.engine_data[engine_name][result['key']
-                                          ] = result['engine_data']
-        elif 'url' in result:
-            # Validar e normalizar os resultados de URL
-            if not self._is_valid_url_result(result, error_msgs):
-                continue
-            self._normalize_url_result(result)
+            # Tratando sugestões, respostas, correções e infoboxes
+            if 'suggestion' in result and self.on_result(result):
+                self.suggestions.add(result['suggestion'])
+            elif 'answer' in result and self.on_result(result):
+                self.answers[result['answer']] = result
+            elif 'correction' in result and self.on_result(result):
+                self.corrections.add(result['correction'])
+            elif 'infobox' in result and self.on_result(result):
+                self._merge_infobox(result)
+            elif 'number_of_results' in result and self.on_result(result):
+                self._number_of_results.append(result['number_of_results'])
+            elif 'engine_data' in result and self.on_result(result):
+                self.engine_data[engine_name][result['key']] = result['engine_data']
+            elif 'url' in result:
+                # Validar e normalizar os resultados de URL
+                if not self._is_valid_url_result(result, error_msgs):
+                    continue
+                self._normalize_url_result(result)
 
-            # **Aqui tratamos os novos campos:**
-            price = result.get('price', '')
-            description = result.get('description', '')
-            image = result.get('image', '')
-            installment = result.get('installment', '')
-            rating = result.get('rating', '')
-            merchant = result.get('merchant', '')
-            thumbnail = result.get('thumbnail', '')
-            cashback = result.get('cashback', '')
+                # **Aqui tratamos os novos campos:**
+                price = result.get('price', '')
+                description = result.get('description', '')
+                image = result.get('image', '')
+                installment = result.get('installment', '')
+                rating = result.get('rating', '')
+                merchant = result.get('merchant', '')
+                thumbnail = result.get('thumbnail', '')
+                cashback = result.get('cashback', '')
 
-            # Adicionando novos campos ao resultado final
-            result.update({
-                'price': price,
-                'description': description,
-                'image': image,
-                'installment': installment,
-                'rating': rating,
-                'merchant': merchant,
-                'thumbnail': thumbnail,
-                'cashback': cashback,
-            })
+                # Adicionando novos campos ao resultado final
+                result.update({
+                    'price': price,
+                    'description': description,
+                    'image': image,
+                    'installment': installment,
+                    'rating': rating,
+                    'merchant': merchant,
+                    'thumbnail': thumbnail,
+                    'cashback': cashback,
+                })
 
-            # Chamar o callback on_result e mesclar resultado
-            if not self.on_result(result):
-                continue
-            self.__merge_url_result(result, standard_result_count + 1)
-            standard_result_count += 1
-        elif self.on_result(result):
-            self.__merge_result_no_url(result, standard_result_count + 1)
-            standard_result_count += 1
+                # Chamar o callback on_result e mesclar resultado
+                if not self.on_result(result):
+                    continue
+                self.__merge_url_result(result, standard_result_count + 1)
+                standard_result_count += 1
+            elif self.on_result(result):
+                self.__merge_result_no_url(result, standard_result_count + 1)
+                standard_result_count += 1
 
-    if len(error_msgs) > 0:
-        for msg in error_msgs:
-            count_error(
-                engine_name, 'some results are invalids: ' + msg, secondary=True)
+        if len(error_msgs) > 0:
+            for msg in error_msgs:
+                count_error(engine_name, 'some results are invalids: ' + msg, secondary=True)
 
-    if engine_name in engines:
-        histogram_observe(standard_result_count, 'engine',
-                          engine_name, 'result', 'count')
+        if engine_name in engines:
+            histogram_observe(standard_result_count, 'engine', engine_name, 'result', 'count')
 
-    if not self.paging and engine_name in engines and engines[engine_name].paging:
-        self.paging = True
+        if not self.paging and engine_name in engines and engines[engine_name].paging:
+            self.paging = True
 
     def _merge_infobox(self, infobox):
         add_infobox = True
@@ -343,8 +339,7 @@ class ResultContainer:
         with self._lock:
             duplicated = self.__find_duplicated_http_result(result)
             if duplicated:
-                self.__merge_duplicated_http_result(
-                    duplicated, result, position)
+                self.__merge_duplicated_http_result(duplicated, result, position)
                 return
 
             # if there is no duplicate found, append result
@@ -371,24 +366,24 @@ class ResultContainer:
 
     def __merge_duplicated_http_result(self, duplicated, result, position):
         # Mesclar conteúdo textual e campos adicionais (preço, descrição, etc.)
-    if result_content_len(result.get('content', '')) > result_content_len(duplicated.get('content', '')):
-        duplicated['content'] = result['content']
+        if result_content_len(result.get('content', '')) > result_content_len(duplicated.get('content', '')):
+            duplicated['content'] = result['content']
 
-    # Atualizar qualquer campo novo do resultado
-    for key in ['price', 'description', 'image', 'installment', 'rating', 'merchant', 'thumbnail', 'cashback']:
-        if key not in duplicated or not duplicated[key]:
-            duplicated[key] = result.get(key)
+        # Atualizar qualquer campo novo do resultado
+        for key in ['price', 'description', 'image', 'installment', 'rating', 'merchant', 'thumbnail', 'cashback']:
+            if key not in duplicated or not duplicated[key]:
+                duplicated[key] = result.get(key)
 
-    # Adicionar nova posição
-    duplicated['positions'].append(position)
+        # Adicionar nova posição
+        duplicated['positions'].append(position)
 
-    # Adicionar o motor de busca à lista de engines
-    duplicated['engines'].add(result['engine'])
+        # Adicionar o motor de busca à lista de engines
+        duplicated['engines'].add(result['engine'])
 
-    # Usar https se possível
-    if duplicated['parsed_url'].scheme != 'https' and result['parsed_url'].scheme == 'https':
-        duplicated['url'] = result['parsed_url'].geturl()
-        duplicated['parsed_url'] = result['parsed_url']
+        # Usar https se possível
+        if duplicated['parsed_url'].scheme != 'https' and result['parsed_url'].scheme == 'https':
+            duplicated['url'] = result['parsed_url'].geturl()
+            duplicated['parsed_url'] = result['parsed_url']
 
     def __merge_result_no_url(self, result, position):
         result['engines'] = set([result['engine']])
@@ -410,8 +405,7 @@ class ResultContainer:
             for result_engine in result['engines']:
                 counter_add(result['score'], 'engine', result_engine, 'score')
 
-        results = sorted(self._merged_results,
-                         key=itemgetter('score'), reverse=True)
+        results = sorted(self._merged_results, key=itemgetter('score'), reverse=True)
 
         # pass 2 : group results by category and template
         gresults = []
@@ -420,8 +414,7 @@ class ResultContainer:
         for res in results:
             # do we need to handle more than one category per engine?
             engine = engines[res['engine']]
-            res['category'] = engine.categories[0] if len(
-                engine.categories) > 0 else ''
+            res['category'] = engine.categories[0] if len(engine.categories) > 0 else ''
 
             # do we need to handle more than one category per engine?
             category = (
@@ -432,8 +425,7 @@ class ResultContainer:
                 + ('img_src' if 'img_src' in res or 'thumbnail' in res else '')
             )
 
-            current = None if category not in categoryPositions else categoryPositions[
-                category]
+            current = None if category not in categoryPositions else categoryPositions[category]
 
             # group with previous results using the same category
             # if the group can accept more result and is not too far
@@ -459,8 +451,7 @@ class ResultContainer:
                 gresults.append(res)
 
                 # update categoryIndex
-                categoryPositions[category] = {
-                    'index': len(gresults), 'count': 8}
+                categoryPositions[category] = {'index': len(gresults), 'count': 8}
 
         # update _merged_results
         self._merged_results = gresults
@@ -480,8 +471,7 @@ class ResultContainer:
 
         with self._lock:
             if not self._closed:
-                logger.error(
-                    "call to ResultContainer.number_of_results before ResultContainer.close")
+                logger.error("call to ResultContainer.number_of_results before ResultContainer.close")
                 return 0
 
             resultnum_sum = sum(self._number_of_results)
@@ -496,26 +486,21 @@ class ResultContainer:
     def add_unresponsive_engine(self, engine_name: str, error_type: str, suspended: bool = False):
         with self._lock:
             if self._closed:
-                logger.error(
-                    "call to ResultContainer.add_unresponsive_engine after ResultContainer.close")
+                logger.error("call to ResultContainer.add_unresponsive_engine after ResultContainer.close")
                 return
             if engines[engine_name].display_error_messages:
-                self.unresponsive_engines.add(
-                    UnresponsiveEngine(engine_name, error_type, suspended))
+                self.unresponsive_engines.add(UnresponsiveEngine(engine_name, error_type, suspended))
 
     def add_timing(self, engine_name: str, engine_time: float, page_load_time: float):
         with self._lock:
             if self._closed:
-                logger.error(
-                    "call to ResultContainer.add_timing after ResultContainer.close")
+                logger.error("call to ResultContainer.add_timing after ResultContainer.close")
                 return
-            self.timings.append(
-                Timing(engine_name, total=engine_time, load=page_load_time))
+            self.timings.append(Timing(engine_name, total=engine_time, load=page_load_time))
 
     def get_timings(self):
         with self._lock:
             if not self._closed:
-                logger.error(
-                    "call to ResultContainer.get_timings before ResultContainer.close")
+                logger.error("call to ResultContainer.get_timings before ResultContainer.close")
                 return []
             return self.timings
