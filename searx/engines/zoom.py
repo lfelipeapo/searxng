@@ -85,7 +85,7 @@ def response(resp):
     # Itera sobre os produtos encontrados pelo XPath
     for product in products:
         try:
-        	print(product)
+            print(product)
             # Extraindo os campos usando os seletores XPath configurados
             title = extract_text(eval_xpath_getindex(product, title_xpath, 0))
             url = eval_xpath_getindex(product, url_xpath, 0, None)
@@ -131,4 +131,3 @@ def response(resp):
     print(f'{len(results)} resultados extraídos com sucesso.')
 
     return results
-

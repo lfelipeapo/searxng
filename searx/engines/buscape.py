@@ -60,7 +60,6 @@ def generate_random_headers():
     }
     return headers
 
-
 def request(query, params):
     """Cria a URL de consulta para buscar os resultados e adiciona proteções contra bloqueios de scraping."""
     query_url = (
@@ -86,7 +85,7 @@ def response(resp):
     # Itera sobre os produtos encontrados pelo XPath
     for product in products:
         try:
-        	print(product)
+            print(product)
             # Extraindo os campos usando os seletores XPath configurados
             title = extract_text(eval_xpath_getindex(product, title_xpath, 0))
             url = eval_xpath_getindex(product, url_xpath, 0, None)
