@@ -45,7 +45,7 @@ engines:
     price_xpath: "//p[@data-testid='product-card::price'] | //p[contains(@class, 'ProductCard_ProductCard_Price')]"
     description_xpath: "//div[@data-testid='product-card::description'] | //div[contains(@class, 'ProductCard_ProductCard_Description')]"
     image_xpath: "//div[@data-testid='product-card::image']//img/@src | //div[contains(@class, 'ProductCard_ProductCard_Image')]//img/@src"
-    thumbnail_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href | //img/@src | //div[@data-testid='product-card::image']//img/@src | //div[contains(@class, 'ProductCard_ProductCard_Image')]//img/@src"
+    thumbnail_xpath: "//div[@data-testid='product-card::image']//img/@src | //div[contains(@class, 'ProductCard_ProductCard_Image')]//img/@src"
     brand_model_xpath: "//h2[@data-testid='product-card::name'] | //h2[contains(@class, 'ProductCard_ProductCard_Name')]"
     installment_xpath: "//span[@data-testid='product-card::installment'] | //span[contains(@class, 'ProductCard_ProductCard_Installment')]"
     cashback_xpath: "//span[@data-testid='product-card::cashback'] | //span[contains(@class, 'ProductCard_ProductCard_CashbackInfo')]"
