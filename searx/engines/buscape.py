@@ -26,10 +26,10 @@ about = {
 
 categories = ['general', 'web']
 paging = True
-max_page = 50
+max_page = 5
 
 # specific xpath variables conforme os settings
-products_xpath = './/div[contains(@class, "ProductCard_ProductCard")]'
+products_xpath = './/div[@data-testid="product-card"]'
 title_xpath = "//h2[@data-testid='product-card::name'] | //h2[contains(@class, 'ProductCard_ProductCard_Name')]"
 url_xpath = "//a[@data-testid='product-card::card']/@href | //a[contains(@class, 'ProductCard_ProductCard_Inner')]/@href"
 price_xpath = "//p[@data-testid='product-card::price'] | //p[contains(@class, 'ProductCard_ProductCard_Price')]"
