@@ -60,13 +60,13 @@ def generate_random_headers():
     }
     return headers
 
+
 def request(query, params):
     """Cria a URL de consulta para buscar os resultados e adiciona proteções contra bloqueios de scraping."""
-    offset = (params['pageno'] - 1) * 10
     query_url = (
         'https://www.buscape.com.br/search'
         + "?"
-        + urlencode({'q': query, 'page': offset})
+        + urlencode({'q': query, 'page': params['pageno']})
     )
 
     # Gera headers aleatórios e os adiciona ao params
@@ -76,12 +76,11 @@ def request(query, params):
 
     return params
 
-
 def response(resp):
     """Processa a resposta HTML e extrai os resultados conforme os seletores."""
     results = []
     dom = html.fromstring(resp.text)
-    
+
     # Itera sobre os produtos encontrados pelo XPath
     for product in eval_xpath_list(dom, products_xpath):
         try:
@@ -117,9 +116,9 @@ def response(resp):
 
             # Exibe um log informativo com o título e preço do produto
             logger.debug(f'Produto encontrado: {title} | Preço: {price}')
-            
+
             results.append(result)
-        
+
         except Exception as e:
             # Captura qualquer erro durante a extração dos campos e exibe no log
             logger.error(f"Erro ao processar o produto: {e}", exc_info=True)
@@ -127,5 +126,5 @@ def response(resp):
 
     # Exibe um log final com a quantidade de resultados processados
     logger.info(f'{len(results)} resultados extraídos com sucesso.')
-    
+
     return results
