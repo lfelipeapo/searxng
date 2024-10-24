@@ -3,6 +3,9 @@ engines:
   - name: google
     engine: google
     shortcut: go
+    description_xpath: "//div[contains(@class, 'VwiC3b yXK7lf lVm3ye r025kc hJNv6b Hdw6tb')]"
+    price_xpath: "//span[contains(@class, 'LI0TWe wHYlTd')]"
+    rating_xpath: "//span[contains(@class, 'yi40Hd YrbPuc')]"
     image_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href"
     thumbnail_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href | //img/@src"
     disabled: false
@@ -10,6 +13,7 @@ engines:
   - name: yahoo
     engine: yahoo
     shortcut: yh
+    rating_xpath: "//label[contains(@class, 'fw-b')]"
     image_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href"
     thumbnail_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href | //img/@src"
     disabled: false
@@ -19,6 +23,7 @@ engines:
     shortcut: bi
     image_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href"
     thumbnail_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href | //img/@src"
+    rating_xpath: "//div[contains(@class, 'b_sritem') and contains(@class, 'b_srtxtstarcolor')]/text()"
     disabled: false
 
   - name: duckduckgo
@@ -31,6 +36,7 @@ engines:
   - name: brave
     engine: brave
     shortcut: br
+    price_xpath: "//div[contains(@class, 'attributes svelte-sxbzkg')]//div[contains(@class, 'r-attr text-sm')]/strong[text()='Preço']/following-sibling::text()"
     image_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href"
     thumbnail_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href | //img/@src"
     disabled: false
