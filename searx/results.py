@@ -13,7 +13,8 @@ from searx.engines import engines
 from searx.metrics import histogram_observe, counter_add, count_error
 
 
-CONTENT_LEN_IGNORED_CHARS_REGEX = re.compile(r'[,;:!?\./\\\\ ()-_]', re.M | re.U)
+CONTENT_LEN_IGNORED_CHARS_REGEX = re.compile(
+    r'[,;:!?\./\\\\ ()-_]', re.M | re.U)
 WHITESPACE_REGEX = re.compile('( |\t|\n)+', re.M | re.U)
 
 
@@ -207,7 +208,7 @@ class ResultContainer:
     error_msgs = set()
     for result in list(results):
         result['engine'] = engine_name
-        
+
         # Tratando sugestões, respostas, correções e infoboxes
         if 'suggestion' in result and self.on_result(result):
             self.suggestions.add(result['suggestion'])
@@ -220,13 +221,14 @@ class ResultContainer:
         elif 'number_of_results' in result and self.on_result(result):
             self._number_of_results.append(result['number_of_results'])
         elif 'engine_data' in result and self.on_result(result):
-            self.engine_data[engine_name][result['key']] = result['engine_data']
+            self.engine_data[engine_name][result['key']
+                                          ] = result['engine_data']
         elif 'url' in result:
             # Validar e normalizar os resultados de URL
             if not self._is_valid_url_result(result, error_msgs):
                 continue
             self._normalize_url_result(result)
-            
+
             # **Aqui tratamos os novos campos:**
             price = result.get('price', '')
             description = result.get('description', '')
@@ -260,10 +262,12 @@ class ResultContainer:
 
     if len(error_msgs) > 0:
         for msg in error_msgs:
-            count_error(engine_name, 'some results are invalids: ' + msg, secondary=True)
+            count_error(
+                engine_name, 'some results are invalids: ' + msg, secondary=True)
 
     if engine_name in engines:
-        histogram_observe(standard_result_count, 'engine', engine_name, 'result', 'count')
+        histogram_observe(standard_result_count, 'engine',
+                          engine_name, 'result', 'count')
 
     if not self.paging and engine_name in engines and engines[engine_name].paging:
         self.paging = True
@@ -304,42 +308,43 @@ class ResultContainer:
         return True
 
     def _normalize_url_result(self, result):
-    """Normalize result attributes."""
-    result['parsed_url'] = urlparse(result['url'])
+        """Normalize result attributes."""
+        result['parsed_url'] = urlparse(result['url'])
 
-    # Usar http como padrão se o esquema estiver ausente
-    if not result['parsed_url'].scheme:
-        result['parsed_url'] = result['parsed_url']._replace(scheme="http")
-        result['url'] = result['parsed_url'].geturl()
+        # Usar http como padrão se o esquema estiver ausente
+        if not result['parsed_url'].scheme:
+            result['parsed_url'] = result['parsed_url']._replace(scheme="http")
+            result['url'] = result['parsed_url'].geturl()
 
-    # Evitar duplicidade de conteúdo entre `content` e `title`
-    if result.get('content') == result.get('title'):
-        del result['content']
+        # Evitar duplicidade de conteúdo entre `content` e `title`
+        if result.get('content') == result.get('title'):
+            del result['content']
 
-    # Garantir que os novos campos também estejam normalizados
-    result['price'] = result.get('price', '').strip()
-    result['description'] = result.get('description', '').strip()
-    result['image'] = result.get('image', '').strip()
-    result['installment'] = result.get('installment', '').strip()
-    result['rating'] = result.get('rating', '').strip()
-    result['merchant'] = result.get('merchant', '').strip()
-    result['thumbnail'] = result.get('thumbnail', '').strip()
-    result['cashback'] = result.get('cashback', '').strip()
+        # Garantir que os novos campos também estejam normalizados
+        result['price'] = result.get('price', '').strip()
+        result['description'] = result.get('description', '').strip()
+        result['image'] = result.get('image', '').strip()
+        result['installment'] = result.get('installment', '').strip()
+        result['rating'] = result.get('rating', '').strip()
+        result['merchant'] = result.get('merchant', '').strip()
+        result['thumbnail'] = result.get('thumbnail', '').strip()
+        result['cashback'] = result.get('cashback', '').strip()
 
-    # Garantir um template padrão
-    if 'template' not in result:
-        result['template'] = 'default.html'
+        # Garantir um template padrão
+        if 'template' not in result:
+            result['template'] = 'default.html'
 
-    # Remover espaços em branco desnecessários do conteúdo
-    if result.get('content'):
-        result['content'] = WHITESPACE_REGEX.sub(' ', result['content'])
+        # Remover espaços em branco desnecessários do conteúdo
+        if result.get('content'):
+            result['content'] = WHITESPACE_REGEX.sub(' ', result['content'])
 
     def __merge_url_result(self, result, position):
         result['engines'] = set([result['engine']])
         with self._lock:
             duplicated = self.__find_duplicated_http_result(result)
             if duplicated:
-                self.__merge_duplicated_http_result(duplicated, result, position)
+                self.__merge_duplicated_http_result(
+                    duplicated, result, position)
                 return
 
             # if there is no duplicate found, append result
@@ -365,7 +370,7 @@ class ResultContainer:
         return None
 
     def __merge_duplicated_http_result(self, duplicated, result, position):
-    # Mesclar conteúdo textual e campos adicionais (preço, descrição, etc.)
+        # Mesclar conteúdo textual e campos adicionais (preço, descrição, etc.)
     if result_content_len(result.get('content', '')) > result_content_len(duplicated.get('content', '')):
         duplicated['content'] = result['content']
 
@@ -405,7 +410,8 @@ class ResultContainer:
             for result_engine in result['engines']:
                 counter_add(result['score'], 'engine', result_engine, 'score')
 
-        results = sorted(self._merged_results, key=itemgetter('score'), reverse=True)
+        results = sorted(self._merged_results,
+                         key=itemgetter('score'), reverse=True)
 
         # pass 2 : group results by category and template
         gresults = []
@@ -414,7 +420,8 @@ class ResultContainer:
         for res in results:
             # do we need to handle more than one category per engine?
             engine = engines[res['engine']]
-            res['category'] = engine.categories[0] if len(engine.categories) > 0 else ''
+            res['category'] = engine.categories[0] if len(
+                engine.categories) > 0 else ''
 
             # do we need to handle more than one category per engine?
             category = (
@@ -425,7 +432,8 @@ class ResultContainer:
                 + ('img_src' if 'img_src' in res or 'thumbnail' in res else '')
             )
 
-            current = None if category not in categoryPositions else categoryPositions[category]
+            current = None if category not in categoryPositions else categoryPositions[
+                category]
 
             # group with previous results using the same category
             # if the group can accept more result and is not too far
@@ -451,7 +459,8 @@ class ResultContainer:
                 gresults.append(res)
 
                 # update categoryIndex
-                categoryPositions[category] = {'index': len(gresults), 'count': 8}
+                categoryPositions[category] = {
+                    'index': len(gresults), 'count': 8}
 
         # update _merged_results
         self._merged_results = gresults
@@ -471,7 +480,8 @@ class ResultContainer:
 
         with self._lock:
             if not self._closed:
-                logger.error("call to ResultContainer.number_of_results before ResultContainer.close")
+                logger.error(
+                    "call to ResultContainer.number_of_results before ResultContainer.close")
                 return 0
 
             resultnum_sum = sum(self._number_of_results)
@@ -486,21 +496,26 @@ class ResultContainer:
     def add_unresponsive_engine(self, engine_name: str, error_type: str, suspended: bool = False):
         with self._lock:
             if self._closed:
-                logger.error("call to ResultContainer.add_unresponsive_engine after ResultContainer.close")
+                logger.error(
+                    "call to ResultContainer.add_unresponsive_engine after ResultContainer.close")
                 return
             if engines[engine_name].display_error_messages:
-                self.unresponsive_engines.add(UnresponsiveEngine(engine_name, error_type, suspended))
+                self.unresponsive_engines.add(
+                    UnresponsiveEngine(engine_name, error_type, suspended))
 
     def add_timing(self, engine_name: str, engine_time: float, page_load_time: float):
         with self._lock:
             if self._closed:
-                logger.error("call to ResultContainer.add_timing after ResultContainer.close")
+                logger.error(
+                    "call to ResultContainer.add_timing after ResultContainer.close")
                 return
-            self.timings.append(Timing(engine_name, total=engine_time, load=page_load_time))
+            self.timings.append(
+                Timing(engine_name, total=engine_time, load=page_load_time))
 
     def get_timings(self):
         with self._lock:
             if not self._closed:
-                logger.error("call to ResultContainer.get_timings before ResultContainer.close")
+                logger.error(
+                    "call to ResultContainer.get_timings before ResultContainer.close")
                 return []
             return self.timings
