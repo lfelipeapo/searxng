@@ -80,7 +80,7 @@ engines:
     shortcut: bcp
     categories: ['general', 'web']
     paging: true
-    timeout: 10.0
+    timeout: 50.0
     disabled: false
 
   # Motor do Zoom
@@ -89,7 +89,7 @@ engines:
     shortcut: zm
     categories: ['general', 'web']
     paging: true
-    timeout: 10.0
+    timeout: 50.0
     disabled: false
     
   - name: googlecse
