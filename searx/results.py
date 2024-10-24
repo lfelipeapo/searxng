@@ -200,50 +200,73 @@ class ResultContainer:
         self._lock = RLock()
 
     def extend(self, engine_name, results):  # pylint: disable=too-many-branches
-        if self._closed:
-            return
+    if self._closed:
+        return
 
-        standard_result_count = 0
-        error_msgs = set()
-        for result in list(results):
-            result['engine'] = engine_name
-            if 'suggestion' in result and self.on_result(result):
-                self.suggestions.add(result['suggestion'])
-            elif 'answer' in result and self.on_result(result):
-                self.answers[result['answer']] = result
-            elif 'correction' in result and self.on_result(result):
-                self.corrections.add(result['correction'])
-            elif 'infobox' in result and self.on_result(result):
-                self._merge_infobox(result)
-            elif 'number_of_results' in result and self.on_result(result):
-                self._number_of_results.append(result['number_of_results'])
-            elif 'engine_data' in result and self.on_result(result):
-                self.engine_data[engine_name][result['key']] = result['engine_data']
-            elif 'url' in result:
-                # standard result (url, title, content)
-                if not self._is_valid_url_result(result, error_msgs):
-                    continue
-                # normalize the result
-                self._normalize_url_result(result)
-                # call on_result call searx.search.SearchWithPlugins._on_result
-                # which calls the plugins
-                if not self.on_result(result):
-                    continue
-                self.__merge_url_result(result, standard_result_count + 1)
-                standard_result_count += 1
-            elif self.on_result(result):
-                self.__merge_result_no_url(result, standard_result_count + 1)
-                standard_result_count += 1
+    standard_result_count = 0
+    error_msgs = set()
+    for result in list(results):
+        result['engine'] = engine_name
+        
+        # Tratando sugestões, respostas, correções e infoboxes
+        if 'suggestion' in result and self.on_result(result):
+            self.suggestions.add(result['suggestion'])
+        elif 'answer' in result and self.on_result(result):
+            self.answers[result['answer']] = result
+        elif 'correction' in result and self.on_result(result):
+            self.corrections.add(result['correction'])
+        elif 'infobox' in result and self.on_result(result):
+            self._merge_infobox(result)
+        elif 'number_of_results' in result and self.on_result(result):
+            self._number_of_results.append(result['number_of_results'])
+        elif 'engine_data' in result and self.on_result(result):
+            self.engine_data[engine_name][result['key']] = result['engine_data']
+        elif 'url' in result:
+            # Validar e normalizar os resultados de URL
+            if not self._is_valid_url_result(result, error_msgs):
+                continue
+            self._normalize_url_result(result)
+            
+            # **Aqui tratamos os novos campos:**
+            price = result.get('price', '')
+            description = result.get('description', '')
+            image = result.get('image', '')
+            installment = result.get('installment', '')
+            rating = result.get('rating', '')
+            merchant = result.get('merchant', '')
+            thumbnail = result.get('thumbnail', '')
+            cashback = result.get('cashback', '')
 
-        if len(error_msgs) > 0:
-            for msg in error_msgs:
-                count_error(engine_name, 'some results are invalids: ' + msg, secondary=True)
+            # Adicionando novos campos ao resultado final
+            result.update({
+                'price': price,
+                'description': description,
+                'image': image,
+                'installment': installment,
+                'rating': rating,
+                'merchant': merchant,
+                'thumbnail': thumbnail,
+                'cashback': cashback,
+            })
 
-        if engine_name in engines:
-            histogram_observe(standard_result_count, 'engine', engine_name, 'result', 'count')
+            # Chamar o callback on_result e mesclar resultado
+            if not self.on_result(result):
+                continue
+            self.__merge_url_result(result, standard_result_count + 1)
+            standard_result_count += 1
+        elif self.on_result(result):
+            self.__merge_result_no_url(result, standard_result_count + 1)
+            standard_result_count += 1
 
-        if not self.paging and engine_name in engines and engines[engine_name].paging:
-            self.paging = True
+    if len(error_msgs) > 0:
+        for msg in error_msgs:
+            count_error(engine_name, 'some results are invalids: ' + msg, secondary=True)
+
+    if engine_name in engines:
+        histogram_observe(standard_result_count, 'engine', engine_name, 'result', 'count')
+
+    if not self.paging and engine_name in engines and engines[engine_name].paging:
+        self.paging = True
 
     def _merge_infobox(self, infobox):
         add_infobox = True
@@ -281,25 +304,35 @@ class ResultContainer:
         return True
 
     def _normalize_url_result(self, result):
-        """Return True if the result is valid"""
-        result['parsed_url'] = urlparse(result['url'])
+    """Normalize result attributes."""
+    result['parsed_url'] = urlparse(result['url'])
 
-        # if the result has no scheme, use http as default
-        if not result['parsed_url'].scheme:
-            result['parsed_url'] = result['parsed_url']._replace(scheme="http")
-            result['url'] = result['parsed_url'].geturl()
+    # Usar http como padrão se o esquema estiver ausente
+    if not result['parsed_url'].scheme:
+        result['parsed_url'] = result['parsed_url']._replace(scheme="http")
+        result['url'] = result['parsed_url'].geturl()
 
-        # avoid duplicate content between the content and title fields
-        if result.get('content') == result.get('title'):
-            del result['content']
+    # Evitar duplicidade de conteúdo entre `content` e `title`
+    if result.get('content') == result.get('title'):
+        del result['content']
 
-        # make sure there is a template
-        if 'template' not in result:
-            result['template'] = 'default.html'
+    # Garantir que os novos campos também estejam normalizados
+    result['price'] = result.get('price', '').strip()
+    result['description'] = result.get('description', '').strip()
+    result['image'] = result.get('image', '').strip()
+    result['installment'] = result.get('installment', '').strip()
+    result['rating'] = result.get('rating', '').strip()
+    result['merchant'] = result.get('merchant', '').strip()
+    result['thumbnail'] = result.get('thumbnail', '').strip()
+    result['cashback'] = result.get('cashback', '').strip()
 
-        # strip multiple spaces and carriage returns from content
-        if result.get('content'):
-            result['content'] = WHITESPACE_REGEX.sub(' ', result['content'])
+    # Garantir um template padrão
+    if 'template' not in result:
+        result['template'] = 'default.html'
+
+    # Remover espaços em branco desnecessários do conteúdo
+    if result.get('content'):
+        result['content'] = WHITESPACE_REGEX.sub(' ', result['content'])
 
     def __merge_url_result(self, result, position):
         result['engines'] = set([result['engine']])
@@ -332,25 +365,25 @@ class ResultContainer:
         return None
 
     def __merge_duplicated_http_result(self, duplicated, result, position):
-        # using content with more text
-        if result_content_len(result.get('content', '')) > result_content_len(duplicated.get('content', '')):
-            duplicated['content'] = result['content']
+    # Mesclar conteúdo textual e campos adicionais (preço, descrição, etc.)
+    if result_content_len(result.get('content', '')) > result_content_len(duplicated.get('content', '')):
+        duplicated['content'] = result['content']
 
-        # merge all result's parameters not found in duplicate
-        for key in result.keys():
-            if not duplicated.get(key):
-                duplicated[key] = result.get(key)
+    # Atualizar qualquer campo novo do resultado
+    for key in ['price', 'description', 'image', 'installment', 'rating', 'merchant', 'thumbnail', 'cashback']:
+        if key not in duplicated or not duplicated[key]:
+            duplicated[key] = result.get(key)
 
-        # add the new position
-        duplicated['positions'].append(position)
+    # Adicionar nova posição
+    duplicated['positions'].append(position)
 
-        # add engine to list of result-engines
-        duplicated['engines'].add(result['engine'])
+    # Adicionar o motor de busca à lista de engines
+    duplicated['engines'].add(result['engine'])
 
-        # using https if possible
-        if duplicated['parsed_url'].scheme != 'https' and result['parsed_url'].scheme == 'https':
-            duplicated['url'] = result['parsed_url'].geturl()
-            duplicated['parsed_url'] = result['parsed_url']
+    # Usar https se possível
+    if duplicated['parsed_url'].scheme != 'https' and result['parsed_url'].scheme == 'https':
+        duplicated['url'] = result['parsed_url'].geturl()
+        duplicated['parsed_url'] = result['parsed_url']
 
     def __merge_result_no_url(self, result, position):
         result['engines'] = set([result['engine']])
