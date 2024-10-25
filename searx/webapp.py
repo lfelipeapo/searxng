@@ -472,7 +472,44 @@ def render(template_name: str, **kwargs):
 
     return result
 
+SECRET_KEY = os.getenv('SECRET_KEY')
+ALLOWED_IPS = os.getenv('ALLOWED_IPS', '').split(',')
+ALLOWED_DOMAINS = os.getenv('ALLOWED_DOMAINS', '').split(',')
+
 load_dotenv()
+
+@app.route('/generate_token', methods=['POST'])
+def generate_token():
+    # Configurações para validação
+
+    # Validação de IP
+    client_ip = request.remote_addr
+    if client_ip not in ALLOWED_IPS:
+        return jsonify({'message': 'IP não autorizado!'}), 403
+
+    # Validação de Domínio
+    referer = request.headers.get('Referer')
+    if not referer:
+        return jsonify({'message': 'Referer é necessário!'}), 403
+
+    domain = referer.split('/')[2]
+    if domain not in ALLOWED_DOMAINS:
+        return jsonify({'message': 'Domínio não autorizado!'}), 403
+
+    # Dados para o token JWT
+    payload = {
+        'ip': client_ip,
+        'domain': domain,
+        'exp': time.time() + 3600  # Token expira em 1 hora
+    }
+
+    # Geração do token JWT
+    token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+
+    # Retornar o token no header da resposta
+    response = jsonify({'message': 'Token gerado com sucesso!'})
+    response.headers['Authorization'] = f'Bearer {token}'
+    return response, 200
 
 @app.before_request
 def pre_request():
@@ -481,12 +518,7 @@ def pre_request():
     request.render_time = 0  # pylint: disable=assigning-non-slot
     request.timings = []  # pylint: disable=assigning-non-slot
     request.errors = []  # pylint: disable=assigning-non-slot
-
-    # Configurações para validação
-    SECRET_KEY = os.getenv('SECRET_KEY')
-    ALLOWED_IPS = os.getenv('ALLOWED_IPS', '').split(',')
-    ALLOWED_DOMAINS = os.getenv('ALLOWED_DOMAINS', '').split(',')
-
+    
     # Verificação do token JWT
     token = request.headers.get('Authorization')
     if not token:
