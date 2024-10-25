@@ -476,6 +476,13 @@ load_dotenv()
 
 @app.before_request
 def pre_request():
+    # Definir os atributos necessários imediatamente
+    request.start_time = default_timer()  # pylint: disable=assigning-non-slot
+    request.render_time = 0  # pylint: disable=assigning-non-slot
+    request.timings = []  # pylint: disable=assigning-non-slot
+    request.errors = []  # pylint: disable=assigning-non-slot
+
+    # Configurações para validação
     SECRET_KEY = os.getenv('SECRET_KEY')
     ALLOWED_IPS = os.getenv('ALLOWED_IPS', '').split(',')
     ALLOWED_DOMAINS = os.getenv('ALLOWED_DOMAINS', '').split(',')
@@ -502,14 +509,9 @@ def pre_request():
         domain = referer.split('/')[2]
         if domain not in ALLOWED_DOMAINS:
             return jsonify({'message': 'Domínio não autorizado!'}), 403
-            
-    request.start_time = default_timer()  # pylint: disable=assigning-non-slot
-    request.render_time = 0  # pylint: disable=assigning-non-slot
-    request.timings = []  # pylint: disable=assigning-non-slot
-    request.errors = []  # pylint: disable=assigning-non-slot
 
+    # Código existente do pre_request
     client_pref = ClientPref.from_http_request(request)
-    # pylint: disable=redefined-outer-name
     preferences = Preferences(themes, list(categories.keys()), engines, plugins, client_pref)
 
     user_agent = request.headers.get('User-Agent', '').lower()
@@ -519,13 +521,11 @@ def pre_request():
 
     try:
         preferences.parse_dict(request.cookies)
-
     except Exception as e:  # pylint: disable=broad-except
         logger.exception(e, exc_info=True)
         request.errors.append(gettext('Invalid settings, please edit your preferences'))
 
-    # merge GET, POST vars
-    # request.form
+    # Merge GET e POST vars
     request.form = dict(request.form.items())  # pylint: disable=assigning-non-slot
     for k, v in request.args.items():
         if k not in request.form:
@@ -536,32 +536,29 @@ def pre_request():
     else:
         try:
             preferences.parse_dict(request.form)
-        except Exception as e:  # pylint: disable=broad-except
+        except Exception as e:
             logger.exception(e, exc_info=True)
             request.errors.append(gettext('Invalid settings'))
 
-    # language is defined neither in settings nor in preferences
-    # use browser headers
+    # Definir idioma se não estiver nas configurações ou preferências
     if not preferences.get_value("language"):
         language = _get_browser_language(request, settings['search']['languages'])
         preferences.parse_dict({"language": language})
         logger.debug('set language %s (from browser)', preferences.get_value("language"))
 
-    # locale is defined neither in settings nor in preferences
-    # use browser headers
+    # Definir locale se não estiver nas configurações ou preferências
     if not preferences.get_value("locale"):
         locale = _get_browser_language(request, LOCALE_NAMES.keys())
         preferences.parse_dict({"locale": locale})
         logger.debug('set locale %s (from browser)', preferences.get_value("locale"))
 
-    # request.user_plugins
+    # Configurar plugins do usuário
     request.user_plugins = []  # pylint: disable=assigning-non-slot
     allowed_plugins = preferences.plugins.get_enabled()
     disabled_plugins = preferences.plugins.get_disabled()
     for plugin in plugins:
         if (plugin.default_on and plugin.id not in disabled_plugins) or plugin.id in allowed_plugins:
             request.user_plugins.append(plugin)
-
 
 @app.after_request
 def add_default_headers(response: flask.Response):
