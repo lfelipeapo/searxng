@@ -85,7 +85,7 @@ def response(resp):
     results = []
     dom = html.fromstring(resp.text)
 
-    url = resp.request.url
+    url = str(resp.request.url)
     params = {
         'q': url.split("q=")[1].split("&")[0] if "q=" in url else '',
         'pageno': int(url.split("page=")[1].split("&")[0]) if "page=" in url else 1,
