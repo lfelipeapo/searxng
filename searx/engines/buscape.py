@@ -80,14 +80,23 @@ def request(query, params):
 
     return params
 
-def response(resp, params):
+
+def response(resp):
     """Processa a resposta HTML e extrai os resultados conforme os seletores."""
     results = []
     dom = html.fromstring(resp.text)
 
+    url = resp.request.url
+    params = {
+        'q': url.split("q=")[1].split("&")[0] if "q=" in url else '',
+        'pageno': int(url.split("page=")[1].split("&")[0]) if "page=" in url else 1,
+        'headers': resp.request.headers  # Reaproveita headers da requisição original
+    }
+
     # Log para verificar o conteúdo do HTML/JSON
     print("Conteúdo da resposta:")
-    print(resp.text[:500])  # Exibe os primeiros 500 caracteres para verificar se estamos recebendo a resposta certa
+    # Exibe os primeiros 500 caracteres para verificar se estamos recebendo a resposta certa
+    print(resp.text[:500])
 
     products = eval_xpath_list(dom, products_xpath)
 
@@ -101,15 +110,21 @@ def response(resp, params):
             title = extract_text(eval_xpath_getindex(product, title_xpath, 0))
             url = eval_xpath_getindex(product, url_xpath, 0, None)
             price = extract_text(eval_xpath_getindex(product, price_xpath, 0))
-            description = extract_text(eval_xpath_getindex(product, description_xpath, 0))
+            description = extract_text(
+                eval_xpath_getindex(product, description_xpath, 0))
             image = eval_xpath_getindex(product, image_xpath, 0, None)
 
             # Campos opcionais
-            installment = extract_text(eval_xpath_getindex(product, installment_xpath, 0)) or None
-            rating = extract_text(eval_xpath_getindex(product, rating_xpath, 0)) or None
-            merchant = extract_text(eval_xpath_getindex(product, merchant_xpath, 0)) or None
-            thumbnail = eval_xpath_getindex(product, thumbnail_xpath, 0, None) or None
-            cashback = extract_text(eval_xpath_getindex(product, cashback_xpath, 0)) or None
+            installment = extract_text(eval_xpath_getindex(
+                product, installment_xpath, 0)) or None
+            rating = extract_text(eval_xpath_getindex(
+                product, rating_xpath, 0)) or None
+            merchant = extract_text(eval_xpath_getindex(
+                product, merchant_xpath, 0)) or None
+            thumbnail = eval_xpath_getindex(
+                product, thumbnail_xpath, 0, None) or None
+            cashback = extract_text(eval_xpath_getindex(
+                product, cashback_xpath, 0)) or None
 
             # Monta o dicionário de resultados
             result = {
@@ -132,20 +147,20 @@ def response(resp, params):
             print(f"Erro ao processar o produto {i + 1}: {e}")
             continue
 
-    # Verifica o tipo de resposta com base no Content-Type
-    content_type = resp.headers.get('Content-Type', '')
-
     # Se for JSON, tenta auto-incrementar a paginação
-    if 'application/json' in content_type:
+    if "format=json" in url:
         # Se o número de produtos retornados for igual ao limite por página, tenta buscar a próxima página
         if len(products) > 0:
             # Incrementa o número da página
             params['pageno'] += 1
+
             # Faz uma nova requisição para a próxima página
-            next_params = request(params['q'], params)
-            next_resp = get(next_params['url'], headers=next_params['headers'])
-            next_results = response(next_resp, next_params)
-            results.extend(next_results)  # Adiciona os resultados da próxima página ao final
+            next_url = 'https://www.buscape.com.br/search?' + urlencode({'q': params['q'], 'page': params['pageno'], 'format': 'json'})
+            # Faz a requisição
+            next_resp = get(next_url, headers=params['headers'])
+            # Processa os resultados da próxima página
+            next_results = response(next_resp)
+            results.extend(next_results)
 
     # Log final com a quantidade de resultados processados
     print(f'{len(results)} resultados extraídos com sucesso.')
