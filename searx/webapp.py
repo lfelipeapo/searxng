@@ -8,10 +8,12 @@
 import hashlib
 import hmac
 import json
+import jwt
 import os
 import sys
 import base64
 
+from dotenv import load_dotenv
 from timeit import default_timer
 from html import escape
 from io import StringIO
@@ -470,9 +472,37 @@ def render(template_name: str, **kwargs):
 
     return result
 
+load_dotenv()
 
 @app.before_request
 def pre_request():
+    SECRET_KEY = os.getenv('SECRET_KEY')
+    ALLOWED_IPS = os.getenv('ALLOWED_IPS', '').split(',')
+    ALLOWED_DOMAINS = os.getenv('ALLOWED_DOMAINS', '').split(',')
+
+    # Verificação do token JWT
+    token = request.headers.get('Authorization')
+    if not token:
+        return jsonify({'message': 'Token é necessário!'}), 403
+
+    try:
+        jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+    except jwt.ExpiredSignatureError:
+        return jsonify({'message': 'Token expirado!'}), 403
+    except jwt.InvalidTokenError:
+        return jsonify({'message': 'Token inválido!'}), 403
+
+    # Validação de IP
+    if request.remote_addr not in ALLOWED_IPS:
+        return jsonify({'message': 'IP não autorizado!'}), 403
+
+    # Validação de Domínio
+    referer = request.headers.get('Referer')
+    if referer:
+        domain = referer.split('/')[2]
+        if domain not in ALLOWED_DOMAINS:
+            return jsonify({'message': 'Domínio não autorizado!'}), 403
+            
     request.start_time = default_timer()  # pylint: disable=assigning-non-slot
     request.render_time = 0  # pylint: disable=assigning-non-slot
     request.timings = []  # pylint: disable=assigning-non-slot
