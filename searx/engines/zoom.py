@@ -128,7 +128,7 @@ def response(resp):
             # Monta o dicionário de resultados
             result = {
                 'title': title,
-                'url': f'https://www.buscape.com.br{url}' if url else None,
+                'url': f'https://www.zoom.com.br{url}' if url else None,
                 'price': price,
                 'description': description,
                 'image': image,
@@ -154,7 +154,7 @@ def response(resp):
             params['pageno'] += 1
 
             # Faz uma nova requisição para a próxima página
-            next_url = 'https://www.buscape.com.br/search?' + \
+            next_url = 'https://www.zoom.com.br/search?' + \
                 urlencode(
                     {'q': params['q'], 'page': params['pageno'], 'format': 'json'})
             # Faz a requisição
