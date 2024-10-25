@@ -110,13 +110,17 @@ def response(resp):
             try:
                 # Extraindo os campos usando os seletores XPath configurados
                 title = extract_text(
-                    eval_xpath_getindex(product, title_xpath, 0))
+                    eval_xpath_getindex(product, title_xpath, 0, None))
                 url_prod = eval_xpath_getindex(product, url_xpath, 0)
                 price = extract_text(
-                    eval_xpath_getindex(product, price_xpath, 0))
+                    eval_xpath_getindex(product, price_xpath, 0, None))
                 description = extract_text(
                     eval_xpath_getindex(product, description_xpath, 0))
                 image = eval_xpath_getindex(product, image_xpath, 0)
+
+                #Campos obrigatórios
+                if not title or not price:
+                    continue
 
                 # Campos opcionais
                 installment = extract_text(eval_xpath_getindex(
