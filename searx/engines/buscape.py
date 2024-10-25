@@ -21,7 +21,7 @@ about = {
     "wikidata_id": 'Q674240',
     "use_official_api": False,
     "require_api_key": False,
-    "results": 'HTML',
+    "results": 'HTML, JSON',
 }
 
 categories = ['general', 'web']
@@ -113,15 +113,11 @@ def response(resp):
             cashback = extract_text(eval_xpath_getindex(
                 product, cashback_xpath, 0)) or None
 
-            # Verifica se os campos obrigatórios têm dados válidos
-            if not title or not url:
-                continue  # Pula o item se os campos obrigatórios estiverem ausentes
-
             # Monta o dicionário de resultados
             result = {
                 'title': title,
                 # Completa o URL se necessário
-                'url': f'https://www.zoom.com.br{url}' if url else None,
+                'url': f'https://www.buscape.com.br{url}' if url else None,
                 'price': price,
                 'description': description,
                 'image': image,
@@ -142,10 +138,4 @@ def response(resp):
     # Log final com a quantidade de resultados processados
     print(f'{len(results)} resultados extraídos com sucesso.')
 
-    # Verifica o formato de resposta, JSON ou HTML
-    if resp.headers.get('Content-Type') == 'application/json':
-        # Para JSON, certifique-se de que todos os resultados sejam retornados como uma lista de objetos
-        return {"results": results}  # Retorna todos os resultados em JSON
-
-    # Para HTML, retorna os resultados normalmente
     return results
