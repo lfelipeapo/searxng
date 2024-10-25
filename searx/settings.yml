@@ -9,7 +9,7 @@ engines:
     image_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href"
     thumbnail_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href | //img/@src"
     disabled: false
-    max_page: 5
+    max_page: 10
 
   - name: yahoo
     engine: yahoo
@@ -18,7 +18,7 @@ engines:
     image_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href"
     thumbnail_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href | //img/@src"
     disabled: false
-    max_page: 5
+    max_page: 10
 
   - name: bing
     engine: bing
@@ -27,7 +27,7 @@ engines:
     thumbnail_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href | //img/@src"
     rating_xpath: "//div[contains(@class, 'b_sritem') and contains(@class, 'b_srtxtstarcolor')]/text()"
     disabled: false
-    max_page: 5
+    max_page: 10
 
   - name: duckduckgo
     engine: duckduckgo
@@ -35,7 +35,7 @@ engines:
     image_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href"
     thumbnail_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href | //img/@src"
     disabled: false
-    max_page: 5
+    max_page: 10
 
   - name: brave
     engine: brave
@@ -44,7 +44,7 @@ engines:
     image_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href"
     thumbnail_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href | //img/@src"
     disabled: false
-    max_page: 5
+    max_page: 10
 
   # # Motores de busca para produtos
   # - name: buscape
@@ -93,7 +93,7 @@ engines:
     paging: true
     timeout: 35.0
     disabled: false
-    max_page: 5
+    max_page: 10
 
   # Motor do Zoom
   - name: zoom
@@ -103,7 +103,7 @@ engines:
     paging: true
     timeout: 35.0
     disabled: false
-    max_page: 5
+    max_page: 10
     
   - name: googlecse
     engine: google
@@ -122,14 +122,14 @@ engines:
     image_query: "pagemap.cse_image[0].src"
     disabled: false
     thumbnail_xpath: "//meta[@property='og:image']/@content | //link[@rel='icon']/@href | //img/@src"
-    max_page: 5
+    max_page: 10
     
 # Configurações gerais de busca
 search:
   safe_search: 1  # SafeSearch: 0: Desligado, 1: Moderado, 2: Estrito
   method: "POST"  # Usar método POST para consultas
   default_lang: "pt-BR"  # Idioma padrão: Português Brasil
-  max_page: 0
+  max_page: 10
   
 
 # Configurações gerais
@@ -196,14 +196,14 @@ ui:
   static_path: ""
   static_use_hash: false
   templates_path: ""
-  query_in_title: false
-  infinite_scroll: true  # Ativa o scroll infinito conforme solicitado
-  default_theme: simple  # Define o tema como Simple
-  center_alignment: true  # Centraliza os resultados
-  default_locale: "pt-BR"  # Define o idioma da interface como pt-BR
+  query_in_title: true
+  infinite_scroll: true
+  default_theme: simple
+  center_alignment: true
+  default_locale: "pt-BR"
   theme_args:
-    simple_style: auto  # Ajusta o estilo do tema para automático (auto)
-  search_on_category_select: true  # Faz a busca automaticamente se uma categoria estiver selecionada
+    simple_style: auto
+  search_on_category_select: true
   hotkeys: default
 
 # Configurações de privacidade
@@ -217,10 +217,10 @@ search:
     - html
     - json
   max_page: 0  # Número de páginas ilimitado para resultados
+  paging: true
 
 # Configurações de privacidade adicionais
 # Modo de exibição de título da consulta e remoção de trackers da URL
-query_in_title: false  # Evita que a consulta apareça no título da aba
 image_proxy: false  # Proxy de imagem desativado
 remove_trackers: true  # Remove rastreadores das URLs recebidas
 doi_resolvers:
