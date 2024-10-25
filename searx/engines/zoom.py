@@ -26,7 +26,7 @@ about = {
 
 categories = ['general', 'web']
 paging = True
-max_page = 5
+max_page = 10
 
 # specific xpath variables conforme os settings
 products_xpath = './/div[@data-testid="product-card"]'
@@ -79,34 +79,39 @@ def response(resp):
     """Processa a resposta HTML e extrai os resultados conforme os seletores."""
     results = []
     dom = html.fromstring(resp.text)
-    
-    # Log para verificar o conteúdo do HTML
-    print("HTML do response:")
-    print(resp.text[:500])  # Exibe os primeiros 500 caracteres para verificar se estamos recebendo a resposta certa
-    
+
+    # Log para verificar o conteúdo do HTML/JSON
+    print("Conteúdo da resposta:")
+    # Exibe os primeiros 500 caracteres para verificar se estamos recebendo a resposta certa
+    print(resp.text[:500])
+
     products = eval_xpath_list(dom, products_xpath)
-    
+
     # Log para verificar quantos produtos foram encontrados
     print(f"Total de produtos encontrados: {len(products)}")
 
     # Itera sobre os produtos encontrados pelo XPath
     for i, product in enumerate(products):
         try:
-            # Log para verificar o conteúdo de cada produto
-            print(f"\nProduto {i + 1}:")
-            print(html.tostring(product, pretty_print=True))  # Exibe o HTML do produto atual
-
             # Extraindo os campos usando os seletores XPath configurados
             title = extract_text(eval_xpath_getindex(product, title_xpath, 0))
             url = eval_xpath_getindex(product, url_xpath, 0, None)
             price = extract_text(eval_xpath_getindex(product, price_xpath, 0))
-            description = extract_text(eval_xpath_getindex(product, description_xpath, 0))
+            description = extract_text(
+                eval_xpath_getindex(product, description_xpath, 0))
             image = eval_xpath_getindex(product, image_xpath, 0, None)
-            installment = extract_text(eval_xpath_getindex(product, installment_xpath, 0))
-            rating = extract_text(eval_xpath_getindex(product, rating_xpath, 0, None))
-            merchant = extract_text(eval_xpath_getindex(product, merchant_xpath, 0))
-            thumbnail = extract_text(eval_xpath_getindex(product, thumbnail_xpath, 0))
-            cashback = extract_text(eval_xpath_getindex(product, cashback_xpath, 0))
+
+            # Campos opcionais
+            installment = extract_text(eval_xpath_getindex(
+                product, installment_xpath, 0)) or None
+            rating = extract_text(eval_xpath_getindex(
+                product, rating_xpath, 0)) or None
+            merchant = extract_text(eval_xpath_getindex(
+                product, merchant_xpath, 0)) or None
+            thumbnail = eval_xpath_getindex(
+                product, thumbnail_xpath, 0, None) or None
+            cashback = extract_text(eval_xpath_getindex(
+                product, cashback_xpath, 0)) or None
 
             # Verifica se os campos obrigatórios têm dados válidos
             if not title or not url:
@@ -115,7 +120,8 @@ def response(resp):
             # Monta o dicionário de resultados
             result = {
                 'title': title,
-                'url': f'https://www.zoom.com.br{url}' if url else None,  # Completa o URL se necessário
+                # Completa o URL se necessário
+                'url': f'https://www.zoom.com.br{url}' if url else None,
                 'price': price,
                 'description': description,
                 'image': image,
@@ -126,9 +132,6 @@ def response(resp):
                 'cashback': cashback,
             }
 
-            # Log para verificar o conteúdo de cada resultado extraído
-            print(f"Resultado {i + 1}: {result}")
-
             results.append(result)
 
         except Exception as e:
@@ -136,8 +139,13 @@ def response(resp):
             print(f"Erro ao processar o produto {i + 1}: {e}")
             continue
 
-    # Exibe um log final com a quantidade de resultados processados
-    print(f'\n{len(results)} resultados extraídos com sucesso.')
+    # Log final com a quantidade de resultados processados
+    print(f'{len(results)} resultados extraídos com sucesso.')
 
+    # Verifica o formato de resposta, JSON ou HTML
+    if resp.headers.get('Content-Type') == 'application/json':
+        # Para JSON, certifique-se de que todos os resultados sejam retornados como uma lista de objetos
+        return {"results": results}  # Retorna todos os resultados em JSON
+
+    # Para HTML, retorna os resultados normalmente
     return results
-
