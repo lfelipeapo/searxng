@@ -111,33 +111,29 @@ def response(resp):
                 # Extraindo os campos usando os seletores XPath configurados
                 title = extract_text(
                     eval_xpath_getindex(product, title_xpath, 0))
-                url_prod = eval_xpath_getindex(product, url_xpath, 0, None)
+                url_prod = eval_xpath_getindex(product, url_xpath, 0)
                 price = extract_text(
                     eval_xpath_getindex(product, price_xpath, 0))
                 description = extract_text(
                     eval_xpath_getindex(product, description_xpath, 0))
-                image = eval_xpath_getindex(product, image_xpath, 0, None)
+                image = eval_xpath_getindex(product, image_xpath, 0)
 
                 # Campos opcionais
                 installment = extract_text(eval_xpath_getindex(
-                    product, installment_xpath, 0)) or None
+                    product, installment_xpath, 0, None))
                 rating = extract_text(eval_xpath_getindex(
-                    product, rating_xpath, 0)) or None
+                    product, rating_xpath, 0, None))
                 merchant = extract_text(eval_xpath_getindex(
-                    product, merchant_xpath, 0)) or None
+                    product, merchant_xpath, 0, None))
                 thumbnail = eval_xpath_getindex(
-                    product, thumbnail_xpath, 0, None) or None
+                    product, thumbnail_xpath, 0, None)
                 cashback = extract_text(eval_xpath_getindex(
-                    product, cashback_xpath, 0)) or None
-
-                # Validação dos campos obrigatórios
-                if not title or not url_prod:
-                    continue  # Pula o item se os campos obrigatórios estiverem ausentes
+                    product, cashback_xpath, 0, None))
 
                 # Monta o dicionário de resultados
                 result = {
                     'title': title,
-                    'url': f'https://www.zoom.com.br{url_prod}' if url_prod else None,
+                    'url': f'https://www.zoom.com.br{url_prod}',
                     'price': price,
                     'description': description,
                     'image': image,
