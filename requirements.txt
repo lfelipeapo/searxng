@@ -25,3 +25,4 @@ uwsgi
 setuptools
 wheel
 pip
+python-dotenv
