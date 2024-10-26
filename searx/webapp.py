@@ -478,9 +478,13 @@ ALLOWED_DOMAINS = os.getenv('ALLOWED_DOMAINS', '').split(',')
 
 load_dotenv()
 
-@app.route('/generate_token', methods=['POST'])
+@app.route('/generate_token', methods=['POST'], endpoint='generate_token')
 def generate_token():
-    # Configurações para validação
+    # Definir os atributos necessários imediatamente
+    request.start_time = default_timer()  # pylint: disable=assigning-non-slot
+    request.render_time = 0  # pylint: disable=assigning-non-slot
+    request.timings = []  # pylint: disable=assigning-non-slot
+    request.errors = []  # pylint: disable=assigning-non-slot
 
     # Validação de IP
     client_ip = request.remote_addr
@@ -492,7 +496,11 @@ def generate_token():
     if not referer:
         return jsonify({'message': 'Referer é necessário!'}), 403
 
-    domain = referer.split('/')[2]
+    try:
+        domain = referer.split('/')[2]
+    except IndexError:
+        return jsonify({'message': 'Referer inválido!'}), 403
+
     if domain not in ALLOWED_DOMAINS:
         return jsonify({'message': 'Domínio não autorizado!'}), 403
 
@@ -513,12 +521,88 @@ def generate_token():
 
 @app.before_request
 def pre_request():
+    # Verifica se a rota chamada é 'generate_token'
+    if request.endpoint == 'generate_token':
+        # Definir os atributos necessários imediatamente
+        request.start_time = default_timer()  # pylint: disable=assigning-non-slot
+        request.render_time = 0  # pylint: disable=assigning-non-slot
+        request.timings = []  # pylint: disable=assigning-non-slot
+        request.errors = []  # pylint: disable=assigning-non-slot
+
+        # Validação de IP
+        client_ip = request.remote_addr
+        if client_ip not in ALLOWED_IPS:
+            return jsonify({'message': 'IP não autorizado!'}), 403
+
+        # Validação de Domínio
+        referer = request.headers.get('Referer')
+        if not referer:
+            return jsonify({'message': 'Referer é necessário!'}), 403
+
+        try:
+            domain = referer.split('/')[2]
+        except IndexError:
+            return jsonify({'message': 'Referer inválido!'}), 403
+
+        if domain not in ALLOWED_DOMAINS:
+            return jsonify({'message': 'Domínio não autorizado!'}), 403
+
+        # Opcional: Inicializar preferências se necessário
+        client_pref = ClientPref.from_http_request(request)
+        preferences = Preferences(themes, list(categories.keys()), engines, plugins, client_pref)
+        request.preferences = preferences  # pylint: disable=assigning-non-slot
+
+        try:
+            preferences.parse_dict(request.cookies)
+        except Exception as e:  # pylint: disable=broad-except
+            logger.exception(e, exc_info=True)
+            request.errors.append(gettext('Invalid settings, please edit your preferences'))
+
+        # Merge GET e POST vars
+        request.form = dict(request.form.items())  # pylint: disable=assigning-non-slot
+        for k, v in request.args.items():
+            if k not in request.form:
+                request.form[k] = v
+
+        if request.form.get('preferences'):
+            preferences.parse_encoded_data(request.form['preferences'])
+        else:
+            try:
+                preferences.parse_dict(request.form)
+            except Exception as e:
+                logger.exception(e, exc_info=True)
+                request.errors.append(gettext('Invalid settings'))
+
+        # Definir idioma se não estiver nas configurações ou preferências
+        if not preferences.get_value("language"):
+            language = _get_browser_language(request, settings['search']['languages'])
+            preferences.parse_dict({"language": language})
+            logger.debug('set language %s (from browser)', preferences.get_value("language"))
+
+        # Definir locale se não estiver nas configurações ou preferências
+        if not preferences.get_value("locale"):
+            locale = _get_browser_language(request, LOCALE_NAMES.keys())
+            preferences.parse_dict({"locale": locale})
+            logger.debug('set locale %s (from browser)', preferences.get_value("locale"))
+
+        # Configurar plugins do usuário
+        request.user_plugins = []  # pylint: disable=assigning-non-slot
+        allowed_plugins = preferences.plugins.get_enabled()
+        disabled_plugins = preferences.plugins.get_disabled()
+        for plugin in plugins:
+            if (plugin.default_on and plugin.id not in disabled_plugins) or plugin.id in allowed_plugins:
+                request.user_plugins.append(plugin)
+
+        # Finaliza a execução sem necessitar de mais validações
+        return
+
+    # Se a rota não for 'generate_token', realiza a validação completa
     # Definir os atributos necessários imediatamente
     request.start_time = default_timer()  # pylint: disable=assigning-non-slot
     request.render_time = 0  # pylint: disable=assigning-non-slot
     request.timings = []  # pylint: disable=assigning-non-slot
     request.errors = []  # pylint: disable=assigning-non-slot
-    
+
     # Verificação do token JWT
     token = request.headers.get('Authorization')
     if not token:
@@ -538,7 +622,11 @@ def pre_request():
     # Validação de Domínio
     referer = request.headers.get('Referer')
     if referer:
-        domain = referer.split('/')[2]
+        try:
+            domain = referer.split('/')[2]
+        except IndexError:
+            return jsonify({'message': 'Referer inválido!'}), 403
+
         if domain not in ALLOWED_DOMAINS:
             return jsonify({'message': 'Domínio não autorizado!'}), 403
 
