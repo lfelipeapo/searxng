@@ -490,10 +490,6 @@ def generate_token():
     client_ip = request.remote_addr
     referer = request.headers.get('Referer')
     domain = referer.split('/')[2] if referer else None
-    
-    # Permitir acesso se o IP ou o domínio estiver autorizado
-    if client_ip not in ALLOWED_IPS and (domain is None or domain not in ALLOWED_DOMAINS):
-        return jsonify({'message': 'Acesso negado: IP ou Domínio não autorizado!'}), 403
 
     # Dados para o token JWT
     payload = {
@@ -597,21 +593,15 @@ def pre_request():
     except jwt.InvalidTokenError:
         return jsonify({'message': 'Token inválido!'}), 403
 
-    # Validação de IP
-    if request.remote_addr not in ALLOWED_IPS:
-        return jsonify({'message': 'IP não autorizado!'}), 403
-
-    # Validação de Domínio
+    # Validação de IP e Domínio
+    client_ip = request.remote_addr
     referer = request.headers.get('Referer')
-    if referer:
-        try:
-            domain = referer.split('/')[2]
-        except IndexError:
-            return jsonify({'message': 'Referer inválido!'}), 403
+    domain = referer.split('/')[2] if referer else None
 
-        if domain not in ALLOWED_DOMAINS:
-            return jsonify({'message': 'Domínio não autorizado!'}), 403
-
+    # Permitir acesso se o IP ou o domínio estiver autorizado
+    if client_ip not in ALLOWED_IPS and (domain is None or domain not in ALLOWED_DOMAINS):
+        return jsonify({'message': 'Acesso negado: IP ou Domínio não autorizado!'}), 403
+    
     # Código existente do pre_request
     client_pref = ClientPref.from_http_request(request)
     preferences = Preferences(themes, list(categories.keys()), engines, plugins, client_pref)
