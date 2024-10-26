@@ -486,23 +486,14 @@ def generate_token():
     request.timings = []  # pylint: disable=assigning-non-slot
     request.errors = []  # pylint: disable=assigning-non-slot
 
-    # Validação de IP
+    # Validação de IP e Domínio
     client_ip = request.remote_addr
-    if client_ip not in ALLOWED_IPS:
-        return jsonify({'message': 'IP não autorizado!'}), 403
-
-    # Validação de Domínio
     referer = request.headers.get('Referer')
-    if not referer:
-        return jsonify({'message': 'Referer é necessário!'}), 403
-
-    try:
-        domain = referer.split('/')[2]
-    except IndexError:
-        return jsonify({'message': 'Referer inválido!'}), 403
-
-    if domain not in ALLOWED_DOMAINS:
-        return jsonify({'message': 'Domínio não autorizado!'}), 403
+    domain = referer.split('/')[2] if referer else None
+    
+    # Permitir acesso se o IP ou o domínio estiver autorizado
+    if client_ip not in ALLOWED_IPS and (domain is None or domain not in ALLOWED_DOMAINS):
+        return jsonify({'message': 'Acesso negado: IP ou Domínio não autorizado!'}), 403
 
     # Dados para o token JWT
     payload = {
@@ -529,23 +520,14 @@ def pre_request():
         request.timings = []  # pylint: disable=assigning-non-slot
         request.errors = []  # pylint: disable=assigning-non-slot
 
-        # Validação de IP
+        # Validação de IP e Domínio
         client_ip = request.remote_addr
-        if client_ip not in ALLOWED_IPS:
-            return jsonify({'message': 'IP não autorizado!'}), 403
-
-        # Validação de Domínio
         referer = request.headers.get('Referer')
-        if not referer:
-            return jsonify({'message': 'Referer é necessário!'}), 403
-
-        try:
-            domain = referer.split('/')[2]
-        except IndexError:
-            return jsonify({'message': 'Referer inválido!'}), 403
-
-        if domain not in ALLOWED_DOMAINS:
-            return jsonify({'message': 'Domínio não autorizado!'}), 403
+        domain = referer.split('/')[2] if referer else None
+        
+        # Permitir acesso se o IP ou o domínio estiver autorizado
+        if client_ip not in ALLOWED_IPS and (domain is None or domain not in ALLOWED_DOMAINS):
+            return jsonify({'message': 'Acesso negado: IP ou Domínio não autorizado!'}), 403
 
         # Opcional: Inicializar preferências se necessário
         client_pref = ClientPref.from_http_request(request)
