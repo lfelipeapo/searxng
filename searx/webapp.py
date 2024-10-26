@@ -584,6 +584,10 @@ def pre_request():
 
     # Verificação do token JWT
     token = request.headers.get('Authorization')
+    
+    if token and token.startswith("Bearer "):
+            token = token.split(" ")[1]
+        
     if not token:
         return jsonify({'message': 'Token é necessário!'}), 403
 
