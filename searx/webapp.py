@@ -489,7 +489,7 @@ def generate_token():
     # Validação de IP e Domínio
     client_ip = request.remote_addr
     referer = request.headers.get('Referer')
-    domain = referer.split('/')[2] if referer else None
+    domain = referer.split('/')[2] if referer and len(referer.split('/')) > 2 else None
 
     # Dados para o token JWT
     payload = {
@@ -519,7 +519,7 @@ def pre_request():
         # Validação de IP e Domínio
         client_ip = request.remote_addr
         referer = request.headers.get('Referer')
-        domain = referer.split('/')[2] if referer else None
+        domain = referer.split('/')[2] if referer and len(referer.split('/')) > 2 else None
         
         # Permitir acesso se o IP ou o domínio estiver autorizado
         if client_ip not in ALLOWED_IPS and (domain is None or domain not in ALLOWED_DOMAINS):
