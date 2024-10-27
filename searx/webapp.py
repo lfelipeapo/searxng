@@ -514,7 +514,7 @@ def pre_request():
     request.timings = []  # pylint: disable=assigning-non-slot
     request.errors = []  # pylint: disable=assigning-non-slot
 
-    if request.endpoint = 'search':
+    if request.endpoint == 'search':
         # Verificação do token JWT
         token = request.headers.get('Authorization')
         
