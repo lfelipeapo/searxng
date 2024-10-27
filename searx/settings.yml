@@ -135,7 +135,7 @@ search:
 # Configurações gerais
 general:
   debug: false
-  instance_name: "SearXNG"
+  instance_name: "MT Search"
   privacypolicy_url: false
   donation_url: false
   contact_url: false
@@ -171,6 +171,8 @@ search:
   formats:
     - html
     - json
+  max_page: 0  # Número de páginas ilimitado para resultados
+  paging: true
 
 server:
   port: 8888
@@ -205,19 +207,6 @@ ui:
     simple_style: auto
   search_on_category_select: true
   hotkeys: default
-
-# Configurações de privacidade
-search:
-  default_lang: "pt-BR"
-  safe_search: 0  # SafeSearch desativado
-  method: "POST"  # Consultas feitas via método POST
-  autocomplete: "google"  # Utiliza o autocompletar do Google
-  autocomplete_min: 4  # Número mínimo de caracteres para ativar o autocompletar
-  formats:
-    - html
-    - json
-  max_page: 0  # Número de páginas ilimitado para resultados
-  paging: true
 
 # Configurações de privacidade adicionais
 # Modo de exibição de título da consulta e remoção de trackers da URL
