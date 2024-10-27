@@ -474,7 +474,7 @@ def render(template_name: str, **kwargs):
     return result
 
 SECRET_KEY = os.getenv('SECRET_KEY')
-ALLOWED_IPS = ["179.145.62.197", "177.96.21.178", "100.20.92.101", "44.225.181.72", "44.227.217.144"]
+ALLOWED_IPS = ["179.145.62.197", "177.96.21.178", "179.87.199.45", "100.20.92.101", "44.225.181.72", "44.227.217.144"]
 ALLOWED_DOMAINS = ["meutudo.com.br", "deploymenttest.meutudo.com.br"]
 
 load_dotenv()
