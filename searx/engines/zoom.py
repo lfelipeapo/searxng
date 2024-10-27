@@ -50,6 +50,17 @@ def generate_random_headers():
     accept_languages = ['en-US,en;q=0.9',
                         'pt-BR,pt;q=0.8,en-US;q=0.6', 'es-ES,es;q=0.8,en;q=0.5']
     accept_encodings = ['gzip, deflate, br', 'gzip, deflate', 'br']
+    
+    referers = [
+        'https://www.google.com/',
+        'https://cse.google.com/',
+        'https://search.yahoo.com/',
+        'https://www.duckduckgo.com/',
+        'https://search.brave.com/',
+        'https://www.bing.com/',
+        'https://www.buscape.com.br/',
+        'https://www.zoom.com.br/'
+    ]
 
     headers = {
         'User-Agent': user_agent,
@@ -59,7 +70,7 @@ def generate_random_headers():
         'Cache-Control': 'no-cache',
         'Upgrade-Insecure-Requests': '1',
         # Adiciona um referer genérico para parecer uma navegação legítima
-        'Referer': 'https://www.google.com/'
+        'Referer': random.choice(referers)
     }
     return headers
 
