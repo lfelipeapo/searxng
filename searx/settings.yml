@@ -162,12 +162,12 @@ search:
   ban_time_on_fail: 10
   max_ban_time_on_fail: 300
   suspended_times:
-    SearxEngineAccessDenied: 86400
-    SearxEngineCaptcha: 86400
-    SearxEngineTooManyRequests: 3600
-    cf_SearxEngineCaptcha: 1296000
-    cf_SearxEngineAccessDenied: 86400
-    recaptcha_SearxEngineCaptcha: 604800
+    SearxEngineAccessDenied: 600
+    SearxEngineCaptcha: 600
+    SearxEngineTooManyRequests: 600
+    cf_SearxEngineCaptcha: 600
+    cf_SearxEngineAccessDenied: 600
+    recaptcha_SearxEngineCaptcha: 600
   formats:
     - html
     - json
@@ -236,13 +236,14 @@ outgoing:
   useragent_suffix: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"
   request_timeout: 40.0
   # the maximum timeout in seconds
-  # max_request_timeout: 10.0
+  max_request_timeout: 100.0
   # suffix of searx_useragent, could contain information like an email address
   # to the administrator
   # The maximum number of concurrent connections that may be established.
-  pool_connections: 100
+  pool_connections: 200
   # Allow the connection pool to maintain keep-alive connections below this
   # point.
-  pool_maxsize: 50
+  pool_maxsize: 100
   # See https://www.python-httpx.org/http2/
   enable_http2: true
+  retries: 5
